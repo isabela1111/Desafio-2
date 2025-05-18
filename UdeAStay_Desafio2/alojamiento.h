@@ -48,5 +48,4 @@ public:
     void Disponibilidad() const;
 };
 
-
 #endif // ALOJAMIENTO_H

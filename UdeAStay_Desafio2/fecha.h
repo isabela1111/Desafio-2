@@ -1,6 +1,5 @@
 #ifndef FECHA_H
 #define FECHA_H
-
 class Fecha {
 private:
     int dia;
@@ -25,4 +24,5 @@ public:
     void imprimirFechaLarga() const;
 
 };
+
 #endif // FECHA_H

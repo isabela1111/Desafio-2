@@ -1,6 +1,6 @@
 #ifndef PAGO_H
 #define PAGO_H
-#include "Fecha.h"
+#include "fecha.h"
 #include <string>
 using namespace std;
 
