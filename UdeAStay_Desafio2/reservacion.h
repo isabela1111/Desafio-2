@@ -30,8 +30,9 @@ public:
     const char* getAnotaciones() const;
 
     void mostrar() const;
-    void activa();
+    bool activa(const Fecha& fechaCorte) const;
     void finalizada();
 };
 
 #endif
+
