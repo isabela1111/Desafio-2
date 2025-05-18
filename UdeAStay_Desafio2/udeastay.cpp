@@ -1,5 +1,8 @@
 #include "udeastay.h"
-#include <fstream>
+#include "alojamiento.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 using namespace std;
 
@@ -12,93 +15,70 @@ UdeAStay::UdeAStay() {
 UdeAStay::~UdeAStay() {
     delete[] huespedes;
 }
-
 void UdeAStay::cargarHuespedes() {
-    ifstream archivo("Huespedes.txt");
-    if (!archivo.is_open()) {
+    FILE* archivo = fopen("Huespedes.txt", "r");
+    if (archivo == NULL) {
         cout << "No se pudo abrir el archivo huespedes.txt" << endl;
         return;
-    }
-    else {
+    } else {
         cout << "Archivo abierto correctamente." << endl;
     }
+
     char linea[256];
     int contador = 0;
-
-    while (archivo.getline(linea, 256)) {
-        if (linea[0] != '\0') contador++;
+    while (fgets(linea, 256, archivo)) {
+        if (strlen(linea) > 1) contador++;
     }
-    archivo.clear();
-    archivo.seekg(0);
+
+    if (contador == 0) {
+        cout << "Archivo vacío o sin líneas válidas." << endl;
+        fclose(archivo);
+        return;
+    }
+
+    rewind(archivo);
 
     huespedes = new Huesped[contador];
-    totalHuespedes = contador;
+    totalHuespedes = 0;
 
-    int i = 0;
-    while (archivo.getline(linea, 256)) {
-        if (linea[0] == '\0') continue;
+    while (fgets(linea, 256, archivo)) {
+        linea[strcspn(linea, "\r\n")] = 0;
 
-        char doc[50];
-        char antStr[10];
-        char puntStr[10];
+        char* token = strtok(linea, ";");
+        if (token == NULL) continue;
 
-        int pos1 = 0, pos2 = 0;
-        int j = 0;
-        while (linea[j] != '\0') {
-            if (linea[j] == ';') {
-                if (pos1 == 0) pos1 = j;
-                else {
-                    pos2 = j;
-                    break;
-                }
-            }
-            j++;
-        }
+        char doc[20];
+        strcpy(doc, token);
 
-        for (int j = 0; j < pos1; j++) {
-            doc[j] = linea[j];
-        }
-        doc[pos1] = '\0';
+        token = strtok(NULL, ";");
+        if (token == NULL) continue;
+        int ant = atoi(token);
 
-        int k = 0;
-        for (int j = pos1 + 1; j < pos2; j++) {
-            antStr[k++] = linea[j];
-        }
-        antStr[k] = '\0';
+        token = strtok(NULL, ";");
+        if (token == NULL) continue;
+        float punt = atof(token);
 
-        k = 0;
-        for (int j = pos2 + 1; linea[j] != '\0'; j++) {
-            puntStr[k++] = linea[j];
-        }
-        puntStr[k] = '\0';
-
-        int ant = atoi(antStr);
-        float punt = atof(puntStr);
-
-        if (ant < 0) {
-            cout << "Error: antiguedad invalida (" << ant << ") para el huesped con documento " << doc << ". Linea omitida." << endl;
+        if (ant < 0 || punt < 0.0f || punt > 5.0f) {
+            cout << "Línea inválida: " << doc << endl;
             continue;
         }
 
-        if (punt < 0.0f || punt > 5.0f) {
-            cout << "Error puntuacion invalida (" << punt << ") para el huesped con documento " << doc << ". Linea omitida." << endl;
-            continue;
-        }
-        huespedes[i] = Huesped(doc, ant, punt);
-        i++;
+        huespedes[totalHuespedes] = Huesped(doc, ant, punt);
+        totalHuespedes++;
     }
-
-    archivo.close();
+    fclose(archivo);
 }
+
 
 void UdeAStay::mostrarHuespedes() {
     for (int i = 0; i < totalHuespedes; i++) {
         cout << "Documento: " << huespedes[i].getDocumento()
-        << ", Antigedad: " << huespedes[i].getAntiguedad()
+        << ", Antiguedad: " << huespedes[i].getAntiguedad()
         << ", Puntuacion: " << huespedes[i].getPuntuacion()
         << endl;
     }
 }
+
 
 void UdeAStay::cargarAnfitriones(Anfitrion* anfitriones[], int& totalAnfitriones, int maxAnfitriones) {
     FILE* archivo = fopen("anfitriones.txt", "r");
@@ -143,4 +123,74 @@ void UdeAStay::cargarAnfitriones(Anfitrion* anfitriones[], int& totalAnfitriones
     fclose(archivo);
 }
 
+
+void UdeAStay::cargarAlojamientos() {
+    FILE* archivo = fopen("alojamientos.txt", "r");
+    if (archivo == NULL) {
+        cout << "No se pudo abrir el archivo de alojamientos.\n";
+        return;
+    }
+
+    char linea[300];
+    int contador = 0;
+
+    while (fgets(linea, sizeof(linea), archivo)) {
+        if (strlen(linea) > 1) contador++;
+    }
+    rewind(archivo);
+
+    alojamientos = new Alojamiento[contador];
+    totalAlojamientos = contador;
+
+    int i = 0;
+    while (fgets(linea, sizeof(linea), archivo) && i < totalAlojamientos) {
+        linea[strcspn(linea, "\r\n")] = 0;
+
+        char* token = strtok(linea, ";");
+        if (!token) continue;
+        char cod[10]; strncpy(cod, token, sizeof(cod) - 1); cod[sizeof(cod) - 1] = '\0';
+
+        token = strtok(NULL, ";"); if (!token) continue;
+        char nom[50]; strncpy(nom, token, sizeof(nom) - 1); nom[sizeof(nom) - 1] = '\0';
+
+        token = strtok(NULL, ";"); if (!token) continue;
+        char docAnf[15]; strncpy(docAnf, token, sizeof(docAnf) - 1); docAnf[sizeof(docAnf) - 1] = '\0';
+
+        token = strtok(NULL, ";"); if (!token) continue;
+        char depto[30]; strncpy(depto, token, sizeof(depto) - 1); depto[sizeof(depto) - 1] = '\0';
+
+        token = strtok(NULL, ";"); if (!token) continue;
+        char muni[30]; strncpy(muni, token, sizeof(muni) - 1); muni[sizeof(muni) - 1] = '\0';
+
+        token = strtok(NULL, ";"); if (!token) continue;
+        char tipo[20]; strncpy(tipo, token, sizeof(tipo) - 1); tipo[sizeof(tipo) - 1] = '\0';
+
+        token = strtok(NULL, ";"); if (!token) continue;
+        char dir[60]; strncpy(dir, token, sizeof(dir) - 1); dir[sizeof(dir) - 1] = '\0';
+
+        token = strtok(NULL, ";"); if (!token) continue;
+        float precio = atof(token);
+
+        token = strtok(NULL, ";"); if (!token) continue;
+        char amen[200]; strncpy(amen, token, sizeof(amen) - 1); amen[sizeof(amen) - 1] = '\0';
+
+        token = strtok(NULL, ";");
+        char fechas[200] = "";
+        if (token) {
+            strncpy(fechas, token, sizeof(fechas) - 1);
+            fechas[sizeof(fechas) - 1] = '\0';
+        }
+
+        alojamientos[i] = Alojamiento(cod, nom, docAnf, depto, muni, tipo, dir, precio, amen, fechas);
+        i++;
+    }
+
+    fclose(archivo);
+}
+
+void UdeAStay::mostrarAlojamientos() {
+    for (int i = 0; i < totalAlojamientos; i++) {
+        alojamientos[i].mostrar();
+    }
+}
 

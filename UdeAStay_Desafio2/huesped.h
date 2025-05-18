@@ -1,24 +1,22 @@
 #ifndef HUESPED_H
 #define HUESPED_H
 
-#include <string>
-using namespace std;
-
 class Huesped {
 private:
-    string documento;
+    char documento[20];
     int antiguedad;
     float puntuacion;
 
 public:
     Huesped();
-    Huesped(string doc, int ant, float punt);
+    Huesped(const char* doc, int ant, float punt);
+
     // Getters
-    string getDocumento() const;
+    const char* getDocumento() const;
     int getAntiguedad() const;
     float getPuntuacion() const;
 
-    // Metodos
+    // Métodos
     void reservar();
     void anularReserva();
     void consultarReservas();

@@ -1,5 +1,4 @@
 #include "anfitrion.h"
-#include <iostream>
 #include <cstring>
 
 using namespace std;
@@ -36,7 +35,6 @@ Anfitrion::~Anfitrion() {
 }
 
 
-
 //Esta funcion solo se uso de prueba para comprobar que el programara leyera correctamente la informacion del .txt, se borrara en un commit despues
 /*
 void Anfitrion::mostrarInfo() const {
@@ -57,7 +55,7 @@ void Anfitrion::mostrarInfo() const {
 }*/
 
 void Anfitrion::verReservas() {
-    /* Aun está pendiente su desarrollo. Esta función debería recorrer todas las reservaciones 
+    /* Aun está pendiente su desarrollo. Esta función debería recorrer todas las reservaciones
        activas del sistema y filtrar aquellas cuyo alojamiento esté asociado al anfitrión actual.
 
        Posible firma futura:
