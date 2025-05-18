@@ -100,3 +100,47 @@ void UdeAStay::mostrarHuespedes() {
     }
 }
 
+void UdeAStay::cargarAnfitriones(Anfitrion* anfitriones[], int& totalAnfitriones, int maxAnfitriones) {
+    FILE* archivo = fopen("anfitriones.txt", "r");
+    if (!archivo) {
+        std::cout << "No se pudo abrir el archivo anfitriones.txt.\n";
+        totalAnfitriones = 0;
+        return;
+    }
+
+    char linea[256];
+    totalAnfitriones = 0;
+
+    while (fgets(linea, 256, archivo) && totalAnfitriones < maxAnfitriones) {
+        linea[strcspn(linea, "\n")] = '\0';
+
+        char* documento = strtok(linea, ";");
+        char* strAntiguedad = strtok(NULL, ";");
+        char* strPuntuacion = strtok(NULL, ";");
+        char* codigosTexto = strtok(NULL, ";");
+
+        if (!documento || !strAntiguedad || !strPuntuacion)
+            continue;
+
+        int antiguedad = atoi(strAntiguedad);
+        int puntuacion = atoi(strPuntuacion);
+
+        int codigos[100];
+        int cantidad = 0;
+
+        if (codigosTexto && strlen(codigosTexto) > 0) {
+            char* token = strtok(codigosTexto, ",");
+            while (token != NULL && cantidad < 100) {
+                codigos[cantidad++] = atoi(token);
+                token = strtok(NULL, ",");
+            }
+        }
+
+        anfitriones[totalAnfitriones] = new Anfitrion(documento, antiguedad, puntuacion, codigos, cantidad);
+        totalAnfitriones++;
+    }
+
+    fclose(archivo);
+}
+
+
