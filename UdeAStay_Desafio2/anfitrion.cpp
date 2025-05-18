@@ -1,5 +1,4 @@
 #include "anfitrion.h"
-#include <iostream>
 #include <cstring>
 
 using namespace std;
@@ -33,49 +32,6 @@ Anfitrion::Anfitrion(const char* doc, int ant, int punt, int* cods, int numCods)
 Anfitrion::~Anfitrion() {
     delete[] documento;
     delete[] codigosAlojamientos;
-}
-
-int Anfitrion::cargarDesdeArchivo(const char* nombreArchivo, Anfitrion* anfitriones[], int maxAnfitriones) {
-    FILE* archivo = fopen(nombreArchivo, "r");
-    if (!archivo) {
-        std::cout << "No se pudo abrir el archivo.\n";
-        return 0;
-    }
-
-    char linea[256];
-    int total = 0;
-
-    while (fgets(linea, 256, archivo) && total < maxAnfitriones) {
-        linea[strcspn(linea, "\n")] = '\0';
-
-        char* documento = strtok(linea, ";");
-        char* strAntiguedad = strtok(NULL, ";");
-        char* strPuntuacion = strtok(NULL, ";");
-        char* codigosTexto = strtok(NULL, ";");
-
-        if (!documento || !strAntiguedad || !strPuntuacion)
-            continue;
-
-        int antiguedad = atoi(strAntiguedad);
-        int puntuacion = atoi(strPuntuacion);
-
-        int codigos[100];
-        int cantidad = 0;
-
-        if (codigosTexto && strlen(codigosTexto) > 0) {
-            char* token = strtok(codigosTexto, ",");
-            while (token != NULL && cantidad < 100) {
-                codigos[cantidad++] = atoi(token);
-                token = strtok(NULL, ",");
-            }
-        }
-
-        anfitriones[total] = new Anfitrion(documento, antiguedad, puntuacion, codigos, cantidad);
-        total++;
-    }
-
-    fclose(archivo);
-    return total;
 }
 
 

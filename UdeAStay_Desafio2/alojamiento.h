@@ -1,51 +1,30 @@
 #ifndef ALOJAMIENTO_H
 #define ALOJAMIENTO_H
-#include <string>
-using namespace std;
 
 class Alojamiento {
 private:
-    string codigo;
-    string nombre;
-    string documentoAnfitrion;
-    string departamento;
-    string municipio;
-    string tipo;
-    string direccion;
+    char codigo[10];
+    char nombre[50];
+    char documentoAnfitrion[15];
+    char departamento[30];
+    char municipio[30];
+    char tipo[20];
+    char direccion[60];
     float precioNoche;
-    string amenidades;
-    string fechasReservadas;
+    char amenidades[200];
+    char fechasReservadas[200];
 
 public:
     Alojamiento();
-    Alojamiento(string cod, string nom, string docAnf, string depto,string muni, string tipo, string dir,
-                float precio,string amenidades, string fechasRes);
+    Alojamiento(const char* cod, const char* nom, const char* docAnf,const char* depto, const char* muni, const char* tipo,
+                const char* dir, float precio,const char* amen, const char* fechas);
 
-    // Getters
-    string getCodigo() const;
-    string getNombre() const;
-    string getDocumentoAnfitrion() const;
-    string getDepartamento() const;
-    string getMunicipio() const;
-    string getTipo() const;
-    string getDireccion() const;
+    const char* getCodigo() const;
+    const char* getNombre() const;
+    const char* getMunicipio() const;
     float getPrecioPorNoche() const;
-    string getAmenidades() const;
-    string getFechasReservadas() const;
 
-    // Setters
-    void setCodigo(string cod);
-    void setNombre(string nom);
-    void setDocumentoAnfitrion(string doc);
-    void setDepartamento(string depto);
-    void setMunicipio(string muni);
-    void setTipo(string t);
-    void setDireccion(string dir);
-    void setPrecioPorNoche(float precio);
-    void setAmenidades(string a);
-    void setFechasReservadas(string fechas);
-
-    void Disponibilidad() const;
+    void mostrar() const;
 };
 
-#endif // ALOJAMIENTO_H
+#endif
