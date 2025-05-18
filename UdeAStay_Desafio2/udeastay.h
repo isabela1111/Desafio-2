@@ -12,6 +12,8 @@ public:
     ~UdeAStay();
     void cargarHuespedes();
     void mostrarHuespedes();
+    void cargarAnfitriones(Anfitrion* anfitriones[], int& totalAnfitriones, int maxAnfitriones);
+
 };
 
 #endif // UDEASTAY_H
