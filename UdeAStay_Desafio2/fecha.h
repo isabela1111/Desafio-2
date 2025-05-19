@@ -24,6 +24,9 @@ public:
     Fecha& operator=(const Fecha& otra);
     bool validarFecha() const;
     void imprimirFechaLarga() const;
+    Fecha sumarDias(int dias) const;
+    int comparar(const Fecha& otra) const;
+
 
 
 };

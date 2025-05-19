@@ -73,3 +73,40 @@ void Fecha::imprimirFechaLarga() const {
     }
 }
 
+Fecha Fecha::sumarDias(int dias) const {
+    int d = dia, m = mes, a = anio;
+    int diasMes[] = { 31,28,31,30,31,30,31,31,30,31,30,31 };
+
+    while (dias > 0) {
+        if ((a % 4 == 0 && a % 100 != 0) || (a % 400 == 0)) diasMes[1] = 29;
+        else diasMes[1] = 28;
+
+        int diasRestantesMes = diasMes[m - 1] - d + 1;
+        if (dias < diasRestantesMes) {
+            d += dias;
+            dias = 0;
+        }
+        else {
+            dias -= diasRestantesMes;
+            d = 1;
+            m++;
+            if (m > 12) {
+                m = 1;
+                a++;
+            }
+        }
+    }
+
+    return Fecha(d, m, a);
+}
+
+int Fecha::comparar(const Fecha& otra) const {
+    if (anio < otra.anio) return -1;
+    if (anio > otra.anio) return 1;
+    if (mes < otra.mes) return -1;
+    if (mes > otra.mes) return 1;
+    if (dia < otra.dia) return -1;
+    if (dia > otra.dia) return 1;
+    return 0;
+}
+
