@@ -1,6 +1,7 @@
 #include "anfitrion.h"
 #include "reservacion.h"
 #include <cstring>
+#include <cstdio>
 #include <iostream>
 
 using namespace std;
@@ -81,11 +82,64 @@ void Anfitrion::verReservas(Reservacion* reservas[], int totalReservas) const {
     }
 }
 
-void Anfitrion::actualizarHistorico() {
-    /* Debería recorrer las reservaciones activas y mover aquellas con fecha final anterior
-       a la fecha de corte indicada por el usuario, hacia un archivo histórico.
 
-       Posible firma futura:
-       void actualizarHistorico(Reservacion* reservaciones[], int& numReservas, const Fecha& corte);
-    */
+
+void Anfitrion::actualizarHistorico(Reservacion* reservas[], int& totalReservas, const Fecha& fechaCorte) {
+    FILE* historico = fopen("historico.txt", "a"); //esto es para que en las reservaciones que pasen al final añadidas de
+    if (!historico) {
+        cout << "No se pudo abrir el archivo historico.txt para escritura.\n";
+        return;
+    }
+    //Lo hice pensando que las reservas estaran asi codigo;documentoHuesped;codigoAlojamiento;dd/mm/aaaa(alojamiento);duracion;metodoPago;monto;dd/mm/aaaa(pago);anotaciones
+
+
+    int nuevasReservas = 0;
+    Reservacion* nuevas[1000]; // Al menos ponemos 1000 de momento
+
+    for (int i = 0; i < totalReservas; i++) {
+        const char* codAloj = reservas[i]->getCodigoAlojamiento();
+        bool esDelAnfitrion = false;
+
+        // Verificar si esta reserva pertenece a uno de los alojamientos del anfitrión
+        for (int j = 0; j < numAlojamientos; j++) {
+            char buffer[10];
+            sprintf(buffer, "%d", codigosAlojamientos[j]);
+
+            if (strcmp(codAloj, buffer) == 0) {
+                esDelAnfitrion = true;
+                break;
+            }
+        }
+
+        if (esDelAnfitrion && !reservas[i]->activa(fechaCorte)) {
+            // Reservación terminada → mover a historico.txt
+            fprintf(historico, "%s;%s;%s;%d/%d/%d;%d;%s;%.2f;%d/%d/%d;%s\n",
+                    reservas[i]->getCodigo(),
+                    reservas[i]->getDocumentoHuesped(),
+                    reservas[i]->getCodigoAlojamiento(),
+                    reservas[i]->getFechaInicio().getDia(),
+                    reservas[i]->getFechaInicio().getMes(),
+                    reservas[i]->getFechaInicio().getAnio(),
+                    reservas[i]->getDuracion(),
+                    reservas[i]->getMetodoPago(),
+                    reservas[i]->getMonto(),
+                    reservas[i]->getFechaPago().getDia(),
+                    reservas[i]->getFechaPago().getMes(),
+                    reservas[i]->getFechaPago().getAnio(),
+                    reservas[i]->getAnotaciones());
+        } else {
+            nuevas[nuevasReservas++] = reservas[i]; // Mantener en lista activa
+        }
+    }
+
+    fclose(historico);
+
+    // Actualizar lista original (sobrescribir punteros)
+    for (int i = 0; i < nuevasReservas; i++) {
+        reservas[i] = nuevas[i];
+    }
+    totalReservas = nuevasReservas;
+
+    cout << "Reservas actualizadas. Las finalizadas se movieron al histórico.\n";
 }
+
