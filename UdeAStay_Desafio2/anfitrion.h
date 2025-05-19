@@ -1,5 +1,6 @@
 #ifndef ANFITRION_H
 #define ANFITRION_H
+#include "reservacion.h"
 
 class Anfitrion {
 private:

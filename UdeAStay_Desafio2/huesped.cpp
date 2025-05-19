@@ -6,11 +6,11 @@ using namespace std;
 Huesped::Huesped() {
     strcpy(documento, "");
     antiguedad = 0;
-    puntuacion = 0.0f;
+    puntuacion = 0.0;
 }
 
 Huesped::Huesped(const char* doc, int ant, float punt) {
-    strcpy(documento, doc);  // copiar texto recibido
+    strcpy(documento, doc);
     antiguedad = ant;
     puntuacion = punt;
 }

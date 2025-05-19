@@ -12,7 +12,6 @@ SOURCES += \
         fecha.cpp \
         huesped.cpp \
         main.cpp \
-        pago.cpp \
         reservacion.cpp \
         udeastay.cpp
 
@@ -26,6 +25,5 @@ HEADERS += \
     anfitrion.h \
     fecha.h \
     huesped.h \
-    pago.h \
     reservacion.h \
     udeastay.h
