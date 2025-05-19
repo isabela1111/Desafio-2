@@ -17,9 +17,9 @@ public:
     //Funcion de prueba
     //void mostrarInfo() const;
 
-    //Funciones en desarrollo
     void verReservas(Reservacion* reservas[], int totalReservas) const;       
-    void actualizarHistorico();
+    void actualizarHistorico(Reservacion* reservas[], int& totalReservas, const Fecha& fechaCorte);
+
 };
 
-#endif // ANFITRION_H
+#endif 
