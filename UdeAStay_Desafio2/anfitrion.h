@@ -18,7 +18,7 @@ public:
     //void mostrarInfo() const;
 
     //Funciones en desarrollo
-    void verReservas();         
+    void verReservas(Reservacion* reservas[], int totalReservas) const;       
     void actualizarHistorico();
 };
 
