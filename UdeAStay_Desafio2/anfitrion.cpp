@@ -1,5 +1,7 @@
 #include "anfitrion.h"
+#include "reservacion.h"
 #include <cstring>
+#include <iostream>
 
 using namespace std;
 
@@ -54,13 +56,29 @@ void Anfitrion::mostrarInfo() const {
     cout << "\n-----------------------------\n";
 }*/
 
-void Anfitrion::verReservas() {
-    /* Aun está pendiente su desarrollo. Esta función debería recorrer todas las reservaciones
-       activas del sistema y filtrar aquellas cuyo alojamiento esté asociado al anfitrión actual.
+void Anfitrion::verReservas(Reservacion* reservas[], int totalReservas) const {
+    cout << "Reservas activas para el anfitrión con documento: " << documento << endl;
+    bool encontrada = false;
 
-       Posible firma futura:
-       void verReservas(Reservacion* reservaciones[], int cantidad);
-    */
+    for (int i = 0; i < totalReservas; i++) {
+        const char* codReserva = reservas[i]->getCodigoAlojamiento();
+
+        // Comparar contra todos los alojamientos del anfitrión
+        for (int j = 0; j < numAlojamientos; j++) {
+            char buffer[10];
+            sprintf(buffer, "%d", codigosAlojamientos[j]);
+
+            if (strcmp(codReserva, buffer) == 0) {
+                reservas[i]->mostrar();
+                encontrada = true;
+                break;
+            }
+        }
+    }
+
+    if (!encontrada) {
+        cout << "No se encontraron reservaciones para sus alojamientos.\n";
+    }
 }
 
 void Anfitrion::actualizarHistorico() {
