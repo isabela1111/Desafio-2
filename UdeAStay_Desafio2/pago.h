@@ -1,29 +1,29 @@
 #ifndef PAGO_H
 #define PAGO_H
+
 #include "fecha.h"
-#include <string>
-using namespace std;
 
 class Pago {
 private:
-    string metodo;
+    char metodo[10];      // "PSE" o "TCredito"
     Fecha fechaPago;
     float monto;
 
 public:
     Pago();
-    Pago(string metodo, Fecha fechaPago, float monto);
+    Pago(const char* metodoPago, const Fecha& fecha, float monto);
 
     // Getters
-    string getMetodo() const;
+    const char* getMetodo() const;
     Fecha getFechaPago() const;
     float getMonto() const;
+
     // Setters
-    void setMetodo(string metodo);
-    void setFechaPago(Fecha fechaPago);
+    void setMetodo(const char* metodoPago);
+    void setFechaPago(const Fecha& fecha);
     void setMonto(float monto);
 
-    void mostrar() const;
+    void mostrarPago() const;
 };
 
 #endif // PAGO_H
