@@ -2,7 +2,6 @@
 #define RESERVACION_H
 
 #include "fecha.h"
-#include "pago.h"
 
 class Reservacion {
 private:
@@ -11,24 +10,29 @@ private:
     char codigoAlojamiento[10];
     Fecha fechaInicio;
     int duracionNoches;
-    Pago pago; 
+    char metodoPago[10];
+    float monto;
+    Fecha fechaPago; 
     char anotaciones[1001];
 
 public:
     Reservacion();
     Reservacion(const char* codRes, const char* docH, const char* codAloj,
-                Fecha inicio, int noches, const Pago& pago, const char* nota);
+                Fecha inicio, int noches, const char* metodoPago, float monto, Fecha fechaPago, const char* nota);
 
+    // Getters
     const char* getCodigo() const;
     const char* getDocumentoHuesped() const;
     const char* getCodigoAlojamiento() const;
     Fecha getFechaInicio() const;
     int getDuracion() const;
-    Pago getPago() const;
+    const char* getMetodoPago() const;
+    float getMonto() const;
+    Fecha getFechaPago() const;
     const char* getAnotaciones() const;
 
     void mostrar() const;
     bool activa(const Fecha& fechaCorte) const;
 };
 
-#endif
+#endif 
