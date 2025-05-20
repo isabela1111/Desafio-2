@@ -196,7 +196,12 @@ void UdeAStay::mostrarAlojamientos() {
     }
 }
 
-void UdeAStay::menuReservar() {
+void UdeAStay::menuReservar(Reservacion* reservas[], int& totalReservas, int maxReservas) {
+    if (totalReservas >= maxReservas) {
+        cout << "Límite de reservas alcanzado.\n";
+        return;
+    }
+
     cout << "\n--- ALOJAMIENTOS DISPONIBLES ---\n";
     for (int i = 0; i < totalAlojamientos; i++) {
         alojamientos[i].mostrar();
@@ -213,6 +218,7 @@ void UdeAStay::menuReservar() {
             break;
         }
     }
+
     if (!seleccionado) {
         cout << "Alojamiento no encontrado.\n";
         return;
@@ -222,6 +228,7 @@ void UdeAStay::menuReservar() {
     cout << "Fecha de entrada (dd mm aaaa): ";
     cin >> dia >> mes >> anio;
     Fecha entrada(dia, mes, anio);
+
     if (!entrada.validarFecha()) {
         cout << "Fecha inválida.\n";
         return;
@@ -234,14 +241,36 @@ void UdeAStay::menuReservar() {
         return;
     }
 
-
     float monto = seleccionado->getPrecioPorNoche() * noches;
     char anotaciones[1001] = "";
     cout << "Ingrese anotaciones (opcional, sin espacios): ";
     cin >> anotaciones;
 
+    char docH[20];
+    cout << "Ingrese su documento de identidad: ";
+    cin >> docH;
 
-//Falta generar el codigo de la reservacion
+
+    char codReserva[10];
+    sprintf(codReserva, "R%03d", totalReservas + 1);  // Ej: R001, R002
+
+    //  Crear reserva parcial sin realizar el pago aun
+    Reservacion* nueva = new Reservacion(
+        codReserva, docH, codBuscado, entrada, noches,
+        "", monto, Fecha(), anotaciones
+    );
+
+    if (!nueva->realizarPago()) {
+        cout << "Reserva cancelada.\n";
+        delete nueva;
+        return;
+    }
+    reservas[totalReservas] = nueva;
+    totalReservas++;
+
+    // Guardar en archivo
+    guardarReservacionEnArchivo(*nueva);
+    cout << "Reserva registrada exitosamente.\n";
 }
 
 //Se espera que reserva .txt sea codigo; documentoHuesped; codigoAlojamiento; fechaInicio; duracionNoches; metodoPago; monto; fechaPago; anotaciones
@@ -365,4 +394,33 @@ void UdeAStay::anularReserva(const char* codigoReservaEliminar) {
         cout << "No se encontró la reservación con ese código.\n";
     }
 }
+
+
+
+void UdeAStay::guardarReservacionEnArchivo(const Reservacion& r) {
+    FILE* archivo = fopen("Reservaciones_activas.txt", "a");
+    if (!archivo) {
+        cout << "No se pudo abrir reservas.txt para escribir.\n";
+        return;
+    }
+
+    fprintf(archivo, "%s;%s;%s;%d/%d/%d;%d;%s;%.2f;%d/%d/%d;%s\n",
+        r.getCodigo(),
+        r.getDocumentoHuesped(),
+        r.getCodigoAlojamiento(),
+        r.getFechaInicio().getDia(),
+        r.getFechaInicio().getMes(),
+        r.getFechaInicio().getAnio(),
+        r.getDuracion(),
+        r.getMetodoPago(),
+        r.getMonto(),
+        r.getFechaPago().getDia(),
+        r.getFechaPago().getMes(),
+        r.getFechaPago().getAnio(),
+        r.getAnotaciones()
+    );
+
+    fclose(archivo);
+}
+
 
