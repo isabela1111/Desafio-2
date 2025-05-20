@@ -32,6 +32,9 @@ public:
 
     void mostrar() const;
     bool activa(const Fecha& fechaCorte) const;
+    bool realizarPago();
+
+
 };
 
 #endif 

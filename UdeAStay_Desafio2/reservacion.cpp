@@ -60,3 +60,56 @@ bool Reservacion::activa(const Fecha& fechaCorte) const {
     Fecha fin = fechaInicio.sumarDias(duracionNoches);
     return fin.comparar(fechaCorte) >= 0;
 }
+
+
+bool Reservacion::realizarPago() {
+    char respuesta[5];
+    cout << "¿Desea pagar ahora? (si/no): ";
+    cin >> respuesta;
+
+    if (strcmp(respuesta, "si") == 0 || strcmp(respuesta, "SI") == 0) {
+        cout << "Monto total a pagar: $" << monto << endl;
+
+        int opcion;
+        cout << "Seleccione el método de pago:\n";
+        cout << "1. PSE\n";
+        cout << "2. Tarjeta\n";
+        cout << "Opción: ";
+        cin >> opcion;
+
+        if (opcion == 1) {
+            strncpy(metodoPago, "PSE", sizeof(metodoPago) - 1);
+            metodoPago[sizeof(metodoPago) - 1] = '\0';
+        }
+        else if (opcion == 2) {
+            strncpy(metodoPago, "Tarjeta", sizeof(metodoPago) - 1);
+            metodoPago[sizeof(metodoPago) - 1] = '\0';
+        }
+        else {
+            cout << "Metodo invalido. No se registró el pago.\n";
+            return false;
+        }
+
+        int d, m, a;
+        cout << "Ingrese la fecha de pago (dd mm aaaa): ";
+        cin >> d >> m >> a;
+        fechaPago = Fecha(d, m, a);
+
+        if (!fechaPago.validarFecha()) {
+            cout << "Fecha inválida. No se registro el pago.\n";
+            return false;
+        }
+
+        if (monto <= 0) {
+            cout << "Monto invalido. No se puede pagar.\n";
+            return false;
+        }
+
+        cout << "Pago registrado correctamente el ";
+        fechaPago.imprimirFechaLarga();
+        cout << " con metodo: " << metodoPago << endl;
+        return true;
+    }
+    cout << "Pago pendiente.\n";
+    return false;
+}
