@@ -127,7 +127,8 @@ void Anfitrion::actualizarHistorico(Reservacion* reservas[], int& totalReservas,
                     reservas[i]->getFechaPago().getMes(),
                     reservas[i]->getFechaPago().getAnio(),
                     reservas[i]->getAnotaciones());
-        } else {
+        }
+        else {
             nuevas[nuevasReservas++] = reservas[i]; // Mantener en lista activa
         }
     }

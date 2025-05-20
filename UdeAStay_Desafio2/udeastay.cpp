@@ -196,6 +196,53 @@ void UdeAStay::mostrarAlojamientos() {
     }
 }
 
+void UdeAStay::menuReservar() {
+    cout << "\n--- ALOJAMIENTOS DISPONIBLES ---\n";
+    for (int i = 0; i < totalAlojamientos; i++) {
+        alojamientos[i].mostrar();
+    }
+
+    char codBuscado[10];
+    cout << "\nIngrese el código del alojamiento deseado: ";
+    cin >> codBuscado;
+
+    Alojamiento* seleccionado = nullptr;
+    for (int i = 0; i < totalAlojamientos; i++) {
+        if (strcmp(alojamientos[i].getCodigo(), codBuscado) == 0) {
+            seleccionado = &alojamientos[i];
+            break;
+        }
+    }
+    if (!seleccionado) {
+        cout << "Alojamiento no encontrado.\n";
+        return;
+    }
+
+    int dia, mes, anio, noches;
+    cout << "Fecha de entrada (dd mm aaaa): ";
+    cin >> dia >> mes >> anio;
+    Fecha entrada(dia, mes, anio);
+    if (!entrada.validarFecha()) {
+        cout << "Fecha inválida.\n";
+        return;
+    }
+
+    cout << "Cantidad de noches: ";
+    cin >> noches;
+    if (noches <= 0) {
+        cout << "Duración inválida.\n";
+        return;
+    }
+
+
+    float monto = seleccionado->getPrecioPorNoche() * noches;
+    char anotaciones[1001] = "";
+    cout << "Ingrese anotaciones (opcional, sin espacios): ";
+    cin >> anotaciones;
+
+
+//Falta generar el codigo de la reservacion
+}
 
 //Se espera que reserva .txt sea codigo; documentoHuesped; codigoAlojamiento; fechaInicio; duracionNoches; metodoPago; monto; fechaPago; anotaciones
 void UdeAStay::cargarReservaciones(Reservacion* reservas[], int& totalReservas, int maxReservas) {
@@ -262,3 +309,60 @@ void UdeAStay::cargarReservaciones(Reservacion* reservas[], int& totalReservas, 
     fclose(archivo);
     cout << totalReservas << " reservaciones cargadas correctamente.\n";
 }
+
+
+void UdeAStay::anularReserva(const char* codigoReservaEliminar) {
+    FILE* original = fopen("reservas_activas.txt", "r");
+    FILE* temp = fopen("temp.txt", "w");
+
+    if (!original || !temp) {
+        cout << "Error al abrir los archivos.\n";
+        return;
+    }
+
+    char linea[1024];
+    bool encontrada = false;
+    char codAlojamiento[10];
+    Fecha fechaInicio;
+    int duracion = 0;
+
+    while (fgets(linea, sizeof(linea), original)) {
+        char copia[1024];
+        strcpy(copia, linea);
+        copia[strcspn(copia, "\n")] = 0;  // quitar salto de línea
+
+        char* token = strtok(copia, ";");
+        if (token && strcmp(token, codigoReservaEliminar) == 0) {
+            encontrada = true;
+
+            strtok(NULL, ";");
+
+            token = strtok(NULL, ";");
+            strcpy(codAlojamiento, token);
+
+            token = strtok(NULL, ";");
+            int d, m, a;
+            sscanf(token, "%d/%d/%d", &d, &m, &a);
+            fechaInicio = Fecha(d, m, a);
+
+            token = strtok(NULL, ";");
+            duracion = atoi(token);
+        }
+        else {
+            fputs(linea, temp);
+        }
+    }
+    fclose(original);
+    fclose(temp);
+
+    remove("reservas_activas.txt");
+    rename("temp.txt", "reservas_activas.txt");
+    if (encontrada) {
+        cout << "Reservación eliminada correctamente.\n";
+        //actualizarFechasAlojamiento(codAlojamiento, fechaInicio, duracion);
+    }
+    else {
+        cout << "No se encontró la reservación con ese código.\n";
+    }
+}
+

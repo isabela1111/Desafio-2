@@ -61,7 +61,6 @@ bool Reservacion::activa(const Fecha& fechaCorte) const {
     return fin.comparar(fechaCorte) >= 0;
 }
 
-
 bool Reservacion::realizarPago() {
     char respuesta[5];
     cout << "¿Desea pagar ahora? (si/no): ";
@@ -113,3 +112,8 @@ bool Reservacion::realizarPago() {
     cout << "Pago pendiente.\n";
     return false;
 }
+
+
+
+
+

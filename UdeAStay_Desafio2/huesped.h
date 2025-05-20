@@ -1,5 +1,7 @@
 #ifndef HUESPED_H
 #define HUESPED_H
+#include "fecha.h"
+#include "reservacion.h"
 
 class Huesped {
 private:
@@ -17,8 +19,9 @@ public:
     float getPuntuacion() const;
 
     // Métodos
+    bool verificarReservas(const Fecha& inicio, int duracion, const Reservacion* listaReservas, int totalReservas) const;
     void reservar();
-    void anularReserva();
+    void solicitarAnulacion();
     void consultarReservas();
 };
 
