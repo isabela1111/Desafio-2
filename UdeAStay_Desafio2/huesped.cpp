@@ -18,11 +18,9 @@ Huesped::Huesped(const char* doc, int ant, float punt) {
 const char* Huesped::getDocumento() const {
     return documento;
 }
-
 int Huesped::getAntiguedad() const {
     return antiguedad;
 }
-
 float Huesped::getPuntuacion() const {
     return puntuacion;
 }
