@@ -1,6 +1,5 @@
 #ifndef RESERVACION_H
 #define RESERVACION_H
-
 #include "fecha.h"
 
 class Reservacion {
@@ -33,6 +32,9 @@ public:
 
     void mostrar() const;
     bool activa(const Fecha& fechaCorte) const;
+    bool realizarPago();
+
+
 };
 
 #endif 

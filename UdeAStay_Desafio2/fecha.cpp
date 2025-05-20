@@ -16,10 +16,15 @@ void Fecha::setMes(int m) { mes = m; }
 void Fecha::setAnio(int a) { anio = a; }
 
 void Fecha::mostrar() const {
-    cout << (dia < 10 ? "0" : "") << dia << "/"
-         << (mes < 10 ? "0" : "") << mes << "/"
-         << anio;
+    if (dia < 10) std::cout << "0";
+    std::cout << dia << "/";
+
+    if (mes < 10) std::cout << "0";
+    std::cout << mes << "/";
+
+    std::cout << anio;
 }
+
 
 bool Fecha::esMenorQue(const Fecha& otra) const {
     if (anio != otra.anio) return anio < otra.anio;
@@ -31,7 +36,6 @@ bool Fecha::esIgualA(const Fecha& otra) const {
     return dia == otra.dia && mes == otra.mes && anio == otra.anio;
 }
 
-// Operador de asignación
 Fecha& Fecha::operator=(const Fecha& otra) {
     if (this != &otra) {
         dia = otra.dia;
@@ -39,6 +43,7 @@ Fecha& Fecha::operator=(const Fecha& otra) {
         anio = otra.anio;
     }
     return *this;
+}
 
 bool Fecha::validarFecha() const {
     if (anio < 0 || mes < 1 || mes > 12 || dia < 1)
@@ -57,19 +62,21 @@ bool Fecha::validarFecha() const {
     else {
         diasMes = 31;
     }
+
     return dia <= diasMes;
 }
 
 void Fecha::imprimirFechaLarga() const {
     const char* nombresMes[] = {
-        "enero", "febrero", "marzo", "abril", "mayo", "junio","julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+        "enero", "febrero", "marzo", "abril", "mayo", "junio",
+        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
     };
 
     if (mes >= 1 && mes <= 12) {
-        cout << dia << " de " << nombresMes[mes - 1] << " del " << anio << endl;
+        std::cout << dia << " de " << nombresMes[mes - 1] << " del " << anio << std::endl;
     }
     else {
-        cout << "Fecha inválida" << endl;
+        std::cout << "Fecha inválida" << std::endl;
     }
 }
 
@@ -109,4 +116,3 @@ int Fecha::comparar(const Fecha& otra) const {
     if (dia > otra.dia) return 1;
     return 0;
 }
-
