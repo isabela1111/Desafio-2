@@ -1,5 +1,7 @@
 #ifndef ALOJAMIENTO_H
 #define ALOJAMIENTO_H
+#include "fecha.h"
+#include "reservacion.h"
 
 class Alojamiento {
 private:
@@ -25,6 +27,8 @@ public:
     float getPrecioPorNoche() const;
 
     void mostrar() const;
+    bool disponibilidad(const Fecha& nuevaEntrada, int duracion,const Reservacion* reservas, int cantidadReservas) const;
+
 };
 
 #endif

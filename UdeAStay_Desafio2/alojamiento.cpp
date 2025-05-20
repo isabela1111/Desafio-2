@@ -85,3 +85,24 @@ void Alojamiento::mostrar() const {
     }
     cout << "--------------------------" << endl;
 }
+
+bool Alojamiento::disponibilidad(const Fecha& nuevaEntrada, int duracion,const Reservacion* reservas, int cantidadReservas) const {
+    Fecha nuevaSalida = nuevaEntrada.sumarDias(duracion);
+
+    for (int i = 0; i < cantidadReservas; i++) {
+        const Reservacion& res = reservas[i];
+
+        if (strcmp(res.getCodigoAlojamiento(), codigo) == 0) {
+            Fecha resInicio = res.getFechaInicio();
+            Fecha resSalida = resInicio.sumarDias(res.getDuracion());
+
+            bool noSeSolapan = nuevaSalida.esMenorQue(resInicio) || resSalida.esMenorQue(nuevaEntrada);
+            if (!noSeSolapan) {
+                return false;
+            }
+        }
+    }
+
+    return true; // No se encontró solapamiento, está disponible
+}
+
