@@ -21,7 +21,7 @@ public:
     // Métodos
     bool verificarReservas(const Fecha& inicio, int duracion, const Reservacion* listaReservas, int totalReservas) const;
     void reservar();
-    void anularReserva();
+    void solicitarAnulacion();
     void consultarReservas();
 };
 

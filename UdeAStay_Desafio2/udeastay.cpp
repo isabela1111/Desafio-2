@@ -1,4 +1,6 @@
 #include "udeastay.h"
+#include "reservacion.h"
+#include "fecha.h"
 #include "alojamiento.h"
 #include <cstdio>
 #include <cstdlib>
@@ -194,7 +196,6 @@ void UdeAStay::mostrarAlojamientos() {
     }
 }
 
-
 void UdeAStay::menuReservar() {
     cout << "\n--- ALOJAMIENTOS DISPONIBLES ---\n";
     for (int i = 0; i < totalAlojamientos; i++) {
@@ -241,5 +242,127 @@ void UdeAStay::menuReservar() {
 
 
 //Falta generar el codigo de la reservacion
+}
+
+//Se espera que reserva .txt sea codigo; documentoHuesped; codigoAlojamiento; fechaInicio; duracionNoches; metodoPago; monto; fechaPago; anotaciones
+void UdeAStay::cargarReservaciones(Reservacion* reservas[], int& totalReservas, int maxReservas) {
+    FILE* archivo = fopen("reservas.txt", "r");
+    if (!archivo) {
+        cout << "No se pudo abrir el archivo reservas.txt\n";
+        totalReservas = 0;
+        return;
+    }
+
+    char linea[512];
+    totalReservas = 0;
+
+    while (fgets(linea, sizeof(linea), archivo) && totalReservas < maxReservas) {
+        linea[strcspn(linea, "\r\n")] = 0;
+
+        char* token = strtok(linea, ";");
+        if (!token) continue;
+        char codRes[15]; strncpy(codRes, token, sizeof(codRes) - 1); codRes[sizeof(codRes) - 1] = '\0';
+
+        token = strtok(NULL, ";");
+        if (!token) continue;
+        char docH[20]; strncpy(docH, token, sizeof(docH) - 1); docH[sizeof(docH) - 1] = '\0';
+
+        token = strtok(NULL, ";");
+        if (!token) continue;
+        char codAloj[10]; strncpy(codAloj, token, sizeof(codAloj) - 1); codAloj[sizeof(codAloj) - 1] = '\0';
+
+        token = strtok(NULL, ";");
+        if (!token) continue;
+        int d, m, a;
+        sscanf(token, "%d/%d/%d", &d, &m, &a);
+        Fecha fechaInicio(d, m, a);
+
+        token = strtok(NULL, ";");
+        if (!token) continue;
+        int noches = atoi(token);
+
+        token = strtok(NULL, ";");
+        if (!token) continue;
+        char metodo[10]; strncpy(metodo, token, sizeof(metodo) - 1); metodo[sizeof(metodo) - 1] = '\0';
+
+        token = strtok(NULL, ";");
+        if (!token) continue;
+        float monto = atof(token);
+
+        token = strtok(NULL, ";");
+        if (!token) continue;
+        int dp, mp, ap;
+        sscanf(token, "%d/%d/%d", &dp, &mp, &ap);
+        Fecha fechaPago(dp, mp, ap);
+
+        token = strtok(NULL, ";");
+        char anot[1001] = "";
+        if (token) {
+            strncpy(anot, token, sizeof(anot) - 1);
+            anot[sizeof(anot) - 1] = '\0';
+        }
+
+        reservas[totalReservas] = new Reservacion(codRes, docH, codAloj, fechaInicio, noches, metodo, monto, fechaPago, anot);
+        totalReservas++;
+    }
+
+    fclose(archivo);
+    cout << totalReservas << " reservaciones cargadas correctamente.\n";
+}
+
+
+void UdeAStay::anularReserva(const char* codigoReservaEliminar) {
+    FILE* original = fopen("reservas_activas.txt", "r");
+    FILE* temp = fopen("temp.txt", "w");
+
+    if (!original || !temp) {
+        cout << "Error al abrir los archivos.\n";
+        return;
+    }
+
+    char linea[1024];
+    bool encontrada = false;
+    char codAlojamiento[10];
+    Fecha fechaInicio;
+    int duracion = 0;
+
+    while (fgets(linea, sizeof(linea), original)) {
+        char copia[1024];
+        strcpy(copia, linea);
+        copia[strcspn(copia, "\n")] = 0;  // quitar salto de línea
+
+        char* token = strtok(copia, ";");
+        if (token && strcmp(token, codigoReservaEliminar) == 0) {
+            encontrada = true;
+
+            strtok(NULL, ";");
+
+            token = strtok(NULL, ";");
+            strcpy(codAlojamiento, token);
+
+            token = strtok(NULL, ";");
+            int d, m, a;
+            sscanf(token, "%d/%d/%d", &d, &m, &a);
+            fechaInicio = Fecha(d, m, a);
+
+            token = strtok(NULL, ";");
+            duracion = atoi(token);
+        }
+        else {
+            fputs(linea, temp);
+        }
+    }
+    fclose(original);
+    fclose(temp);
+
+    remove("reservas_activas.txt");
+    rename("temp.txt", "reservas_activas.txt");
+    if (encontrada) {
+        cout << "Reservación eliminada correctamente.\n";
+        //actualizarFechasAlojamiento(codAlojamiento, fechaInicio, duracion);
+    }
+    else {
+        cout << "No se encontró la reservación con ese código.\n";
+    }
 }
 

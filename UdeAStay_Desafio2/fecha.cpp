@@ -25,7 +25,6 @@ void Fecha::mostrar() const {
     std::cout << anio;
 }
 
-
 bool Fecha::esMenorQue(const Fecha& otra) const {
     if (anio != otra.anio) return anio < otra.anio;
     if (mes != otra.mes) return mes < otra.mes;

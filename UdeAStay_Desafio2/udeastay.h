@@ -27,6 +27,10 @@ public:
     void mostrarAlojamientos();
 
     void menuReservar();
+    void cargarReservaciones(Reservacion* reservas[], int& totalReservas, int maxReservas);
+
+    void anularReserva(const char* codigoReserva);
+
 };
 
 #endif // UDEASTAY_H

@@ -28,6 +28,8 @@ public:
 
     void mostrar() const;
     bool disponibilidad(const Fecha& nuevaEntrada, int duracion,const Reservacion* reservas, int cantidadReservas) const;
+    void actualizarFechasAlojamiento(const char* codAloj, const Fecha& inicio, int duracion);
+
 
 };
 
