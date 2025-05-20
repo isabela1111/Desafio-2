@@ -25,6 +25,8 @@ public:
 
     void cargarAlojamientos();
     void mostrarAlojamientos();
+
+    void menuReservar();
 };
 
 #endif // UDEASTAY_H

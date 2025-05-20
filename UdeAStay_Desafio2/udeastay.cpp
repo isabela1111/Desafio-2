@@ -194,3 +194,52 @@ void UdeAStay::mostrarAlojamientos() {
     }
 }
 
+
+void UdeAStay::menuReservar() {
+    cout << "\n--- ALOJAMIENTOS DISPONIBLES ---\n";
+    for (int i = 0; i < totalAlojamientos; i++) {
+        alojamientos[i].mostrar();
+    }
+
+    char codBuscado[10];
+    cout << "\nIngrese el código del alojamiento deseado: ";
+    cin >> codBuscado;
+
+    Alojamiento* seleccionado = nullptr;
+    for (int i = 0; i < totalAlojamientos; i++) {
+        if (strcmp(alojamientos[i].getCodigo(), codBuscado) == 0) {
+            seleccionado = &alojamientos[i];
+            break;
+        }
+    }
+    if (!seleccionado) {
+        cout << "Alojamiento no encontrado.\n";
+        return;
+    }
+
+    int dia, mes, anio, noches;
+    cout << "Fecha de entrada (dd mm aaaa): ";
+    cin >> dia >> mes >> anio;
+    Fecha entrada(dia, mes, anio);
+    if (!entrada.validarFecha()) {
+        cout << "Fecha inválida.\n";
+        return;
+    }
+
+    cout << "Cantidad de noches: ";
+    cin >> noches;
+    if (noches <= 0) {
+        cout << "Duración inválida.\n";
+        return;
+    }
+
+
+    float monto = seleccionado->getPrecioPorNoche() * noches;
+    char anotaciones[1001] = "";
+    cout << "Ingrese anotaciones (opcional, sin espacios): ";
+    cin >> anotaciones;
+
+
+//Falta generar el codigo de la reservacion
+}
+
