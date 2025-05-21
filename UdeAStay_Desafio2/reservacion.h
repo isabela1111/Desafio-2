@@ -30,6 +30,7 @@ public:
     Fecha getFechaPago() const;
     const char* getAnotaciones() const;
 
+
     void mostrar() const;
     bool activa(const Fecha& fechaCorte) const;
     bool realizarPago();

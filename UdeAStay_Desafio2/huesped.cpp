@@ -27,21 +27,23 @@ float Huesped::getPuntuacion() const {
     return puntuacion;
 }
 
-bool Huesped::verificarReservas(const Fecha& inicio, int duracion, const Reservacion* listaReservas, int totalReservas) const {
+bool Huesped::verificarReservas(const Fecha& inicio, int duracion, Reservacion** listaReservas, int totalReservas) const {
     Fecha finDeseada = inicio.sumarDias(duracion - 1);
 
     for (int i = 0; i < totalReservas; i++) {
-        if (strcmp(listaReservas[i].getDocumentoHuesped(), documento) == 0) {
-            Fecha inicioExistente = listaReservas[i].getFechaInicio();
-            Fecha finExistente = inicioExistente.sumarDias(listaReservas[i].getDuracion() - 1);
+        if (strcmp(listaReservas[i]->getDocumentoHuesped(), documento) == 0) {
+            Fecha inicioExistente = listaReservas[i]->getFechaInicio();
+            Fecha finExistente = inicioExistente.sumarDias(listaReservas[i]->getDuracion() - 1);
 
             if (!(finDeseada.esMenorQue(inicioExistente) || inicio.esMenorQue(finExistente) == false)) {
                 return false;
             }
         }
     }
+
     return true;
 }
+
 
 const char* Huesped::solicitarAnulacion() {
     static char codigo[10];

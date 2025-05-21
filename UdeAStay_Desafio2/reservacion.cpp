@@ -40,7 +40,6 @@ float Reservacion::getMonto() const { return monto; }
 Fecha Reservacion::getFechaPago() const { return fechaPago; }
 const char* Reservacion::getAnotaciones() const { return anotaciones; }
 
-// Mostrar
 void Reservacion::mostrar() const {
     cout << "Código: " << codigo << endl;
     cout << "Huésped: " << documentoHuesped << " - Alojamiento: " << codigoAlojamiento << endl;

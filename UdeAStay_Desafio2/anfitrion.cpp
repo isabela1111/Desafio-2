@@ -36,6 +36,14 @@ Anfitrion::~Anfitrion() {
     delete[] documento;
     delete[] codigosAlojamientos;
 }
+const char* Anfitrion::getDocumento() const {
+    return documento;
+}
+
+float Anfitrion::getPuntuacion() const {
+    return puntuacion;
+}
+
 
 
 //Esta funcion solo se uso de prueba para comprobar que el programara leyera correctamente la informacion del .txt, se borrara en un commit despues
