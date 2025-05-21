@@ -206,9 +206,76 @@ void UdeAStay::mostrarAlojamientos() {
     }
 }
 
+<<<<<<< HEAD
 int UdeAStay::obtenerUltimoCodigoReserva() {
     FILE* archivo = fopen("Reservaciones_activas.txt", "r");
     if (!archivo) return 0;
+=======
+void UdeAStay::menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Reservacion* reservas[], int& totalReservas) {
+    char documento[20];
+    cout << "Ingrese su documento de identificación: ";
+    cin >> documento;
+
+    Anfitrion* anfitrionActivo = nullptr;
+    for (int i = 0; i < totalAnfitriones; i++) {
+        if (strcmp(anfitriones[i]->getDocumento(), documento) == 0) {
+            anfitrionActivo = anfitriones[i];
+            break;
+        }
+    }
+
+    if (!anfitrionActivo) {
+        cout << "Anfitrión no encontrado.\n";
+        return;
+    }
+
+    int opcion;
+    do {
+        cout << "\n--- Menú Anfitrión ---\n";
+        cout << "1. Ver reservas activas\n";
+        cout << "2. Actualizar histórico de reservas\n";
+        cout << "3. Volver al menú principal\n";
+        cout << "Seleccione una opción: ";
+        cin >> opcion;
+
+        switch (opcion) {
+            case 1:
+                anfitrionActivo->verReservas(reservas, totalReservas);
+                break;
+
+            case 2: {
+                int d, m, a;
+                cout << "Ingrese fecha de corte (dd mm aaaa): ";
+                cin >> d >> m >> a;
+                Fecha fechaCorte(d, m, a);
+
+                if (!fechaCorte.validarFecha()) {
+                    cout << "Fecha inválida.\n";
+                    break;
+                }
+
+                anfitrionActivo->actualizarHistorico(reservas, totalReservas, fechaCorte);
+                break;
+            }
+
+            case 3:
+                cout << "Regresando al menú principal...\n";
+                break;
+
+            default:
+                cout << "Opción inválida.\n";
+        }
+
+    } while (opcion != 3);
+}
+
+
+void UdeAStay::menuReservar(Reservacion* reservas[], int& totalReservas, int maxReservas) {
+    if (totalReservas >= maxReservas) {
+        cout << "Límite de reservas alcanzado.\n";
+        return;
+    }
+>>>>>>> origin/Juan-Felipe
 
     char linea[256];
     int ultimo = 0;

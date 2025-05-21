@@ -45,6 +45,9 @@ public:
     void aplicarFiltros(const char* municipio, const Fecha& inicio, int noches, float maxPrecio, float minPuntuacion) const;
 
 
+    void menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Reservacion* reservas[], int& totalReservas);
+
+
 
 };
 
