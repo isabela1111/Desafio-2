@@ -4,13 +4,15 @@
 using namespace std;
 
 Huesped::Huesped() {
-    strcpy(documento, "");
+    strncpy(documento, "", sizeof(documento) - 1);
+    documento[sizeof(documento) - 1] = '\0';
     antiguedad = 0;
     puntuacion = 0.0;
 }
 
 Huesped::Huesped(const char* doc, int ant, float punt) {
-    strcpy(documento, doc);
+    strncpy(documento, doc, sizeof(documento) - 1);
+    documento[sizeof(documento) - 1] = '\0';
     antiguedad = ant;
     puntuacion = punt;
 }
@@ -24,6 +26,7 @@ int Huesped::getAntiguedad() const {
 float Huesped::getPuntuacion() const {
     return puntuacion;
 }
+
 bool Huesped::verificarReservas(const Fecha& inicio, int duracion, const Reservacion* listaReservas, int totalReservas) const {
     Fecha finDeseada = inicio.sumarDias(duracion - 1);
 
@@ -37,20 +40,34 @@ bool Huesped::verificarReservas(const Fecha& inicio, int duracion, const Reserva
             }
         }
     }
-
     return true;
 }
 
-
-void Huesped::reservar() {
-    cout << "Reservando alojamiento para huésped " << documento << endl;
+const char* Huesped::solicitarAnulacion() {
+    static char codigo[10];
+    cout << "Ingrese el código de la reservación a anular: ";
+    cin >> codigo;
+    return codigo;
 }
 
-void Huesped::solicitarAnulacion() {
-    cout << "Anulando reservación para huésped " << documento << endl;
+void Huesped::consultarReservas(const Reservacion* lista, int total) {
+    cout << "\nReservas activas del huesped " << documento << ":\n";
+    bool hayReservas = false;
+
+    for (int i = 0; i < total; i++) {
+        if (strcmp(lista[i].getDocumentoHuesped(), documento) == 0) {
+            lista[i].mostrar();
+            hayReservas = true;
+        }
+    }
+    if (!hayReservas) {
+        cout << "No tiene reservas activas.\n";
+    }
 }
 
-void Huesped::consultarReservas() {
-    cout << "Consultando reservaciones activas para huésped " << documento << endl;
+void Huesped::mostrarResumen() const {
+    cout << "Documento: " << documento
+         << ", Antiguedad: " << antiguedad
+         << ", Puntuacion: " << puntuacion << endl;
 }
 
