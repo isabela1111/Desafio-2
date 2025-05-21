@@ -50,6 +50,10 @@ public:
     void menuHuesped(const char* documento);
     void menuPrincipal();
 
+    bool huespedExiste(const char* documento) const;
+    bool anfitrionExiste(const char* documento) const;
+
+
 };
 
 #endif // UDEASTAY_H
