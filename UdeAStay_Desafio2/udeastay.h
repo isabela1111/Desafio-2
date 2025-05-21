@@ -4,6 +4,8 @@
 #include "huesped.h"
 #include "anfitrion.h"
 #include "alojamiento.h"
+#include "reservacion.h"
+#include "fecha.h"
 
 class UdeAStay {
 private:
@@ -28,27 +30,29 @@ public:
     void mostrarHuespedes();
 
     void cargarAnfitriones(Anfitrion* anfitriones[], int& totalAnfitriones, int maxAnfitriones);
-    void mostrarAnfitriones();
-
     void cargarAlojamientos();
     void mostrarAlojamientos();
-    void cargarReservaciones(Reservacion* reservas[], int& totalReservas, int maxReservas);
 
+    void cargarReservaciones();
+    void guardarReservacionEnArchivo(const Reservacion& nueva);
+
+    int obtenerUltimoCodigoReserva();
+    float obtenerPuntuacionAnfitrion(const char* doc) const;
+
+    void agregarReserva(Reservacion* nueva);
+    void aplicarFiltros(const char* municipio, const Fecha& inicio, int noches, float precioMax, float puntMin) const;
+
+    void menuReservar();
     void anularReserva(const char* codigoReserva);
     void menuAnularReservaComoHuesped(const char* documentoHuesped);
-    float obtenerPuntuacionAnfitrion(const char* doc)const;
-    void menuReservar();
-    int obtenerUltimoCodigoReserva();
-    void guardarReservacionEnArchivo(const Reservacion& nueva);
-    void agregarReserva(Reservacion* nueva);
-    void menuHuesped();
-    void aplicarFiltros(const char* municipio, const Fecha& inicio, int noches, float maxPrecio, float minPuntuacion) const;
-
 
     void menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Reservacion* reservas[], int& totalReservas);
-
-
+    void menuHuesped(const char* documento);
+    void menuPrincipal();
 
 };
 
 #endif // UDEASTAY_H
+
+
+

@@ -1,9 +1,7 @@
 #include "udeastay.h"
 
 int main() {
-    UdeAStay udea;
-    udea.mostrarHuespedes();
-    udea.cargarAlojamientos();
-    udea.mostrarAlojamientos();
+    UdeAStay sistema;
+    sistema.menuPrincipal();
     return 0;
 }

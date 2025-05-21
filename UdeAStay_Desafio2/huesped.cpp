@@ -52,20 +52,22 @@ const char* Huesped::solicitarAnulacion() {
     return codigo;
 }
 
-void Huesped::consultarReservas(const Reservacion* lista, int total) {
-    cout << "\nReservas activas del huesped " << documento << ":\n";
+void Huesped::consultarReservas(Reservacion** lista, int total){
+    cout << "\nReservas activas del huésped " << documento << ":\n";
     bool hayReservas = false;
 
     for (int i = 0; i < total; i++) {
-        if (strcmp(lista[i].getDocumentoHuesped(), documento) == 0) {
-            lista[i].mostrar();
+        if (strcmp(lista[i]->getDocumentoHuesped(), documento) == 0) {
+            lista[i]->mostrar();
             hayReservas = true;
         }
     }
+
     if (!hayReservas) {
         cout << "No tiene reservas activas.\n";
     }
 }
+
 
 void Huesped::mostrarResumen() const {
     cout << "Documento: " << documento

@@ -91,24 +91,21 @@ void Anfitrion::verReservas(Reservacion* reservas[], int totalReservas) const {
 }
 
 
-
 void Anfitrion::actualizarHistorico(Reservacion* reservas[], int& totalReservas, const Fecha& fechaCorte) {
-    FILE* historico = fopen("historico.txt", "a"); //esto es para que en las reservaciones que pasen al final añadidas de
+    FILE* historico = fopen("Historico.txt", "a");
     if (!historico) {
-        cout << "No se pudo abrir el archivo historico.txt para escritura.\n";
+        cout << "No se pudo abrir el archivo reservas_historico.txt para escritura.\n";
         return;
     }
-    //Lo hice pensando que las reservas estaran asi codigo;documentoHuesped;codigoAlojamiento;dd/mm/aaaa(alojamiento);duracion;metodoPago;monto;dd/mm/aaaa(pago);anotaciones
-
 
     int nuevasReservas = 0;
-    Reservacion* nuevas[1000]; // Al menos ponemos 1000 de momento
+    Reservacion* nuevas[1000]; // temporal
 
     for (int i = 0; i < totalReservas; i++) {
         const char* codAloj = reservas[i]->getCodigoAlojamiento();
         bool esDelAnfitrion = false;
 
-        // Verificar si esta reserva pertenece a uno de los alojamientos del anfitrión
+        // Verifica si este alojamiento lo administra el anfitrión
         for (int j = 0; j < numAlojamientos; j++) {
             char buffer[10];
             sprintf(buffer, "%d", codigosAlojamientos[j]);
@@ -121,7 +118,7 @@ void Anfitrion::actualizarHistorico(Reservacion* reservas[], int& totalReservas,
 
         if (esDelAnfitrion && !reservas[i]->activa(fechaCorte)) {
             // Reservación terminada → mover a historico.txt
-            fprintf(historico, "%s;%s;%s;%d/%d/%d;%d;%s;%.2f;%d/%d/%d;%s\n",
+            fprintf(historico, "%s;%s;%s;%02d/%02d/%04d;%d;%s;%.2f;%02d/%02d/%04d;%s\n",
                     reservas[i]->getCodigo(),
                     reservas[i]->getDocumentoHuesped(),
                     reservas[i]->getCodigoAlojamiento(),
@@ -134,16 +131,19 @@ void Anfitrion::actualizarHistorico(Reservacion* reservas[], int& totalReservas,
                     reservas[i]->getFechaPago().getDia(),
                     reservas[i]->getFechaPago().getMes(),
                     reservas[i]->getFechaPago().getAnio(),
-                    reservas[i]->getAnotaciones());
+                    reservas[i]->getAnotaciones()
+                    );
+
+            // Liberar memoria
+            delete reservas[i];
         }
         else {
-            nuevas[nuevasReservas++] = reservas[i]; // Mantener en lista activa
+            nuevas[nuevasReservas++] = reservas[i];
         }
     }
 
     fclose(historico);
-
-    // Actualizar lista original (sobrescribir punteros)
+    // Copiar solo las activas de vuelta al arreglo original
     for (int i = 0; i < nuevasReservas; i++) {
         reservas[i] = nuevas[i];
     }
