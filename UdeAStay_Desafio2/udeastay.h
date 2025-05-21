@@ -31,6 +31,9 @@ public:
     void menuReservar(Reservacion* reservas[], int& totalReservas, int maxReservas);
     void guardarReservacionEnArchivo(const Reservacion& nueva);
 
+    void menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Reservacion* reservas[], int& totalReservas);
+
+
 
 };
 
