@@ -32,8 +32,6 @@ public:
     void mostrar() const;
     bool disponibilidad(const Fecha& nuevaEntrada, int duracion, Reservacion** reservas, int cantidadReservas) const;
     void actualizarFechasAlojamiento(const char* codAloj, const Fecha& inicio, int duracion);
-    bool cumpleFiltro(float precioMax, float puntuacionMin, float puntuacionAnfitrion) const;
-
 
 };
 
