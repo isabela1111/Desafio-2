@@ -605,11 +605,33 @@ void UdeAStay::menuAnularReservaComoHuesped(const char* documentoHuesped) {
     anularReserva(codigo);
 }
 
+bool UdeAStay::huespedExiste(const char* documento) const {
+    for (int i = 0; i < totalHuespedes; i++) {
+        if (strcmp(huespedes[i].getDocumento(), documento) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool UdeAStay::anfitrionExiste(const char* documento) const {
+    for (int i = 0; i < totalAnfitriones; i++) {
+        if (strcmp(anfitriones[i]->getDocumento(), documento) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 void UdeAStay::menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Reservacion* reservas[], int& totalReservas) {
     char documento[20];
     cout << "Ingrese su documento de identificación: ";
     cin >> documento;
+    if (!anfitrionExiste(documento)) {
+        cout << "No estás registrado como anfitrion.\n";
+        break;
+    }
 
     Anfitrion* anfitrionActivo = nullptr;
     for (int i = 0; i < totalAnfitriones; i++) {
@@ -727,6 +749,10 @@ void UdeAStay::menuPrincipal() {
             char documento[20];
             cout << "Ingrese su documento: ";
             cin >> documento;
+            if (!huespedExiste(documento)) {
+                cout << "No estás registrado como huésped.\n";
+                break;
+            }
             menuHuesped(documento);
             break;
         }
