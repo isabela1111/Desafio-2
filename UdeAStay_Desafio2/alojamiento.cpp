@@ -67,10 +67,22 @@ Alojamiento::Alojamiento(const char* cod, const char* nom, const char* docAnf, c
     fechasReservadas[sizeof(fechasReservadas) - 1] = '\0';
 }
 
-const char* Alojamiento::getCodigo() const { return codigo; }
-const char* Alojamiento::getNombre() const { return nombre; }
-const char* Alojamiento::getMunicipio() const { return municipio; }
-float Alojamiento::getPrecioPorNoche() const { return precioNoche; }
+const char* Alojamiento::getCodigo() const {
+    return codigo;
+}
+const char* Alojamiento::getNombre() const {
+    return nombre;
+}
+const char* Alojamiento::getMunicipio() const {
+    return municipio;
+}
+const char* Alojamiento::getDocumentoAnfitrion() const {
+    return documentoAnfitrion;
+}
+float Alojamiento::getPrecioPorNoche() const {
+    return precioNoche;
+}
+
 
 void Alojamiento::mostrar() const {
     cout << "Codigo: " << codigo << " - " << nombre << endl;
@@ -86,15 +98,15 @@ void Alojamiento::mostrar() const {
     cout << "--------------------------" << endl;
 }
 
-bool Alojamiento::disponibilidad(const Fecha& nuevaEntrada, int duracion,const Reservacion* reservas, int cantidadReservas) const {
+bool Alojamiento::disponibilidad(const Fecha& nuevaEntrada, int duracion, Reservacion** reservas, int cantidadReservas) const {
     Fecha nuevaSalida = nuevaEntrada.sumarDias(duracion);
 
     for (int i = 0; i < cantidadReservas; i++) {
-        const Reservacion& res = reservas[i];
+        Reservacion* res = reservas[i];
 
-        if (strcmp(res.getCodigoAlojamiento(), codigo) == 0) {
-            Fecha resInicio = res.getFechaInicio();
-            Fecha resSalida = resInicio.sumarDias(res.getDuracion());
+        if (strcmp(res->getCodigoAlojamiento(), codigo) == 0) {
+            Fecha resInicio = res->getFechaInicio();
+            Fecha resSalida = resInicio.sumarDias(res->getDuracion());
 
             bool noSeSolapan = nuevaSalida.esMenorQue(resInicio) || resSalida.esMenorQue(nuevaEntrada);
             if (!noSeSolapan) {
@@ -104,6 +116,7 @@ bool Alojamiento::disponibilidad(const Fecha& nuevaEntrada, int duracion,const R
     }
     return true;
 }
+
 
 void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inicio, int duracion) {
     FILE* in = fopen("alojamientos.txt", "r");

@@ -13,6 +13,13 @@ private:
     Alojamiento* alojamientos;
     int totalAlojamientos;
 
+    Anfitrion** anfitriones;
+    int totalAnfitriones;
+
+    Reservacion** reservas;
+    int totalReservas;
+    int capacidadReservas;
+
 public:
     UdeAStay();
     ~UdeAStay();
@@ -28,8 +35,15 @@ public:
     void cargarReservaciones(Reservacion* reservas[], int& totalReservas, int maxReservas);
 
     void anularReserva(const char* codigoReserva);
-    void menuReservar(Reservacion* reservas[], int& totalReservas, int maxReservas);
+    void menuAnularReservaComoHuesped(const char* documentoHuesped);
+    float obtenerPuntuacionAnfitrion(const char* doc)const;
+    void menuReservar();
+    int obtenerUltimoCodigoReserva();
     void guardarReservacionEnArchivo(const Reservacion& nueva);
+    void agregarReserva(Reservacion* nueva);
+    void menuHuesped();
+    void aplicarFiltros(const char* municipio, const Fecha& inicio, int noches, float maxPrecio, float minPuntuacion) const;
+
 
     void menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Reservacion* reservas[], int& totalReservas);
 

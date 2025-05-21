@@ -19,7 +19,7 @@ public:
     float getPuntuacion() const;
 
     // Métodos
-    bool verificarReservas(const Fecha& inicio, int duracion, const Reservacion* listaReservas, int totalReservas) const;
+    bool verificarReservas(const Fecha& inicio, int duracion, Reservacion** listaReservas, int totalReservas) const;
     const char* solicitarAnulacion();
     void consultarReservas(const Reservacion* lista, int total);
     void mostrarResumen() const;
