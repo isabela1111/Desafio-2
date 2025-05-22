@@ -44,16 +44,15 @@ bool Huesped::verificarReservas(const Fecha& inicio, int duracion, Reservacion**
     return true;
 }
 
-
 const char* Huesped::solicitarAnulacion() {
     static char codigo[10];
-    cout << "Ingrese el código de la reservación a anular: ";
+    cout << "Ingrese el codigo de la reservacion a anular: ";
     cin >> codigo;
     return codigo;
 }
 
 void Huesped::consultarReservas(Reservacion** lista, int total){
-    cout << "\nReservas activas del huésped " << documento << ":\n";
+    cout << "\nReservas activas del huesped " << documento << ":\n";
     bool hayReservas = false;
 
     for (int i = 0; i < total; i++) {
@@ -67,7 +66,6 @@ void Huesped::consultarReservas(Reservacion** lista, int total){
         cout << "No tiene reservas activas.\n";
     }
 }
-
 
 void Huesped::mostrarResumen() const {
     cout << "Documento: " << documento

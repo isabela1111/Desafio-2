@@ -6,7 +6,7 @@ class Anfitrion {
 private:
     char* documento;
     int antiguedad;
-    int puntuacion;
+    float puntuacion;
     int* codigosAlojamientos;
     int numAlojamientos;
 

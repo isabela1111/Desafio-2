@@ -90,11 +90,6 @@ void Alojamiento::mostrar() const {
     cout << "Municipio: " << municipio << " (" << departamento << ")" << endl;
     cout << "Precio por noche: $" << precioNoche << endl;
     cout << "Amenidades: " << amenidades << endl;
-    if (strlen(fechasReservadas) > 0) {
-        cout << "Fechas reservadas: " << fechasReservadas << endl;
-    } else {
-        cout << "Sin fechas reservadas." << endl;
-    }
     cout << "--------------------------" << endl;
 }
 
@@ -119,7 +114,7 @@ bool Alojamiento::disponibilidad(const Fecha& nuevaEntrada, int duracion, Reserv
 
 
 void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inicio, int duracion) {
-    FILE* in = fopen("alojamientos.txt", "r");
+    FILE* in = fopen("Alojamientos.txt", "r");
     FILE* temp = fopen("temp.txt", "w");
 
     if (!in || !temp) {
@@ -161,7 +156,6 @@ void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inic
                         break;
                     }
                 }
-
                 if (!eliminar) {
                     if (!primera) strcat(nuevasFechas, ",");
                     strcat(nuevasFechas, fechaToken);
@@ -170,7 +164,6 @@ void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inic
 
                 fechaToken = strtok(NULL, ",");
             }
-
             for (int i = 0; i < 9; i++) {
                 fprintf(temp, "%s;", campos[i]);
             }
@@ -180,9 +173,66 @@ void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inic
             fputs(linea, temp);
         }
     }
-
     fclose(in);
     fclose(temp);
-    remove("alojamientos.txt");
-    rename("temp.txt", "alojamientos.txt");
+    remove("Alojamientos.txt");
+    rename("temp.txt", "Alojamientos.txt");
 }
+
+void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, int duracion) {
+    FILE* in = fopen("Alojamientos.txt", "r");
+    FILE* temp = fopen("temp.txt", "w");
+
+    if (!in || !temp) {
+        cout << "Error al abrir los archivos de alojamiento.\n";
+        return;
+    }
+
+    char linea[1024];
+    char nuevasFechas[512];
+
+    while (fgets(linea, sizeof(linea), in)) {
+        char copia[1024];
+        strcpy(copia, linea);
+        copia[strcspn(copia, "\n")] = 0;
+
+        char campos[10][256] = {};
+        int count = 0;
+        char* token = strtok(copia, ";");
+        while (token && count < 10) {
+            strncpy(campos[count], token, sizeof(campos[count]) - 1);
+            campos[count][sizeof(campos[count]) - 1] = '\0';
+            count++;
+            token = strtok(NULL, ";");
+        }
+
+        if (count == 10 && strcmp(campos[0], cod) == 0) {
+            if (strlen(campos[9]) > 0) {
+                strncpy(nuevasFechas, campos[9], sizeof(nuevasFechas));
+            } else {
+                nuevasFechas[0] = '\0';
+            }
+
+            for (int i = 0; i < duracion; i++) {
+                Fecha f = inicio.sumarDias(i);
+                char fechaStr[15];
+                sprintf(fechaStr, "%02d/%02d/%04d", f.getDia(), f.getMes(), f.getAnio());
+
+                if (strlen(nuevasFechas) > 0) strcat(nuevasFechas, ",");
+                strcat(nuevasFechas, fechaStr);
+            }
+
+            for (int i = 0; i < 9; i++) {
+                fprintf(temp, "%s;", campos[i]);
+            }
+            fprintf(temp, "%s\n", nuevasFechas);
+        } else {
+            fputs(linea, temp);
+        }
+    }
+    fclose(in);
+    fclose(temp);
+    remove("Alojamientos.txt");
+    rename("temp.txt", "Alojamientos.txt");
+}
+
