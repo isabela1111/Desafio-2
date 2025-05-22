@@ -41,12 +41,12 @@ Fecha Reservacion::getFechaPago() const { return fechaPago; }
 const char* Reservacion::getAnotaciones() const { return anotaciones; }
 
 void Reservacion::mostrar() const {
-    cout << "Código: " << codigo << endl;
-    cout << "Huésped: " << documentoHuesped << " - Alojamiento: " << codigoAlojamiento << endl;
+    cout << "Codigo: " << codigo << endl;
+    cout << "Huesped: " << documentoHuesped << " - Alojamiento: " << codigoAlojamiento << endl;
     cout << "Fecha de inicio: ";
     fechaInicio.imprimirFechaLarga();
-    cout << "Duración: " << duracionNoches << " noches" << endl;
-    cout << "Método de pago: " << metodoPago << " - Monto: $" << monto << endl;
+    cout << "Duracion: " << duracionNoches << " noches" << endl;
+    cout << "Metodo de pago: " << metodoPago << " - Monto: $" << monto << endl;
     cout << "Fecha de pago: ";
     fechaPago.imprimirFechaLarga();
     if (strlen(anotaciones) > 0) {
@@ -69,10 +69,10 @@ bool Reservacion::realizarPago() {
         cout << "Monto total a pagar: $" << monto << endl;
 
         int opcion;
-        cout << "Seleccione el método de pago:\n";
+        cout << "Seleccione el metodo de pago:\n";
         cout << "1. PSE\n";
         cout << "2. Tarjeta\n";
-        cout << "Opción: ";
+        cout << "Opcion: ";
         cin >> opcion;
 
         if (opcion == 1) {
@@ -84,7 +84,7 @@ bool Reservacion::realizarPago() {
             metodoPago[sizeof(metodoPago) - 1] = '\0';
         }
         else {
-            cout << "Metodo invalido. No se registró el pago.\n";
+            cout << "Metodo invalido. No se registro el pago.\n";
             return false;
         }
 
@@ -94,7 +94,7 @@ bool Reservacion::realizarPago() {
         fechaPago = Fecha(d, m, a);
 
         if (!fechaPago.validarFecha()) {
-            cout << "Fecha inválida. No se registro el pago.\n";
+            cout << "Fecha invalida. No se registro el pago.\n";
             return false;
         }
 
@@ -102,7 +102,6 @@ bool Reservacion::realizarPago() {
             cout << "Monto invalido. No se puede pagar.\n";
             return false;
         }
-
         cout << "Pago registrado correctamente el ";
         fechaPago.imprimirFechaLarga();
         cout << " con metodo: " << metodoPago << endl;

@@ -13,7 +13,7 @@ SOURCES += \
         huesped.cpp \
         main.cpp \
         reservacion.cpp \
-        udeastay.cpp
+        udeastay.cpp \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
