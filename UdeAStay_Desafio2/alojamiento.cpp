@@ -83,25 +83,35 @@ float Alojamiento::getPrecioPorNoche() const {
     return precioNoche;
 }
 
-
 void Alojamiento::mostrar() const {
     cout << "Codigo: " << codigo << " - " << nombre << endl;
     cout << "Tipo: " << tipo << " - Direccion: " << direccion << endl;
     cout << "Municipio: " << municipio << " (" << departamento << ")" << endl;
     cout << "Precio por noche: $" << precioNoche << endl;
     cout << "Amenidades: " << amenidades << endl;
+    if (strlen(fechasReservadas) > 0) {
+        cout << "Fechas reservadas: " << fechasReservadas << endl;
+    }
+    else {
+        cout << "Sin fechas reservadas." << endl;
+        }
     cout << "--------------------------" << endl;
 }
 
 bool Alojamiento::disponibilidad(const Fecha& nuevaEntrada, int duracion, Reservacion** reservas, int cantidadReservas) const {
-    Fecha nuevaSalida = nuevaEntrada.sumarDias(duracion);
-
+    for (int i = 0; i < duracion; i++) {
+        Fecha dia = nuevaEntrada.sumarDias(i);
+        if (fechaOcupada(dia)) {
+            return false;
+        }
+    }
     for (int i = 0; i < cantidadReservas; i++) {
         Reservacion* res = reservas[i];
 
         if (strcmp(res->getCodigoAlojamiento(), codigo) == 0) {
             Fecha resInicio = res->getFechaInicio();
-            Fecha resSalida = resInicio.sumarDias(res->getDuracion());
+            Fecha resSalida = resInicio.sumarDias(res->getDuracion() - 1);
+            Fecha nuevaSalida = nuevaEntrada.sumarDias(duracion - 1);
 
             bool noSeSolapan = nuevaSalida.esMenorQue(resInicio) || resSalida.esMenorQue(nuevaEntrada);
             if (!noSeSolapan) {
@@ -142,7 +152,6 @@ void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inic
             strcpy(campos[count++], token);
             token = strtok(NULL, ";");
         }
-
         if (count == 10 && strcmp(campos[0], cod) == 0) {
             char* fechaToken = strtok(campos[9], ",");
             char nuevasFechas[512] = "";
@@ -187,7 +196,6 @@ void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, 
         cout << "Error al abrir los archivos de alojamiento.\n";
         return;
     }
-
     char linea[1024];
     char nuevasFechas[512];
 
@@ -234,5 +242,23 @@ void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, 
     fclose(temp);
     remove("Alojamientos.txt");
     rename("temp.txt", "Alojamientos.txt");
+}
+
+bool Alojamiento::fechaOcupada(const Fecha& f) const {
+    char buscada[12];
+    sprintf(buscada, "%02d/%02d/%04d", f.getDia(), f.getMes(), f.getAnio());
+
+    char copia[1024];
+    strncpy(copia, fechasReservadas, sizeof(copia) - 1);
+    copia[sizeof(copia) - 1] = '\0';
+
+    char* token = strtok(copia, ",");
+    while (token != NULL) {
+        if (strcmp(token, buscada) == 0) {
+            return true;
+        }
+        token = strtok(NULL, ",");
+    }
+    return false;
 }
 

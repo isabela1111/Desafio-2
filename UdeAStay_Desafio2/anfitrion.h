@@ -17,8 +17,6 @@ public:
     const char* getDocumento() const;
     float getPuntuacion() const;
 
-    //Funcion de prueba
-    //void mostrarInfo() const;
 
     void verReservas(Reservacion* reservas[], int totalReservas) const;       
     void actualizarHistorico(Reservacion* reservas[], int& totalReservas, const Fecha& fechaCorte);
