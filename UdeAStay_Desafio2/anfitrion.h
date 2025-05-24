@@ -21,6 +21,7 @@ public:
     void verReservas(Reservacion* reservas[], int totalReservas) const;       
     void actualizarHistorico(Reservacion* reservas[], int& totalReservas, const Fecha& fechaCorte);
 
+
 };
 
 #endif 
