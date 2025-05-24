@@ -12,13 +12,11 @@ private:
 
 public:
     Anfitrion();
-    Anfitrion(const char* doc, int ant, int punt, int* cods, int numCods);
+    Anfitrion(const char* doc, int ant, float punt, int* cods, int numCods);
     ~Anfitrion();
     const char* getDocumento() const;
     float getPuntuacion() const;
 
-    //Funcion de prueba
-    //void mostrarInfo() const;
 
     void verReservas(Reservacion* reservas[], int totalReservas) const;       
     void actualizarHistorico(Reservacion* reservas[], int& totalReservas, const Fecha& fechaCorte);

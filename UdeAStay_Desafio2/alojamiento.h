@@ -27,13 +27,11 @@ public:
     const char* getDocumentoAnfitrion() const;
     float getPrecioPorNoche() const;
 
-
-
     void mostrar() const;
     bool disponibilidad(const Fecha& nuevaEntrada, int duracion, Reservacion** reservas, int cantidadReservas) const;
     void actualizarFechasAlojamiento(const char* codAloj, const Fecha& inicio, int duracion);
     void agregarFechasReservadas(const char* cod, const Fecha& inicio, int duracion);
-
+    bool fechaOcupada(const Fecha& f) const;
 
 };
 

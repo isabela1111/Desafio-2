@@ -15,7 +15,7 @@ Anfitrion::Anfitrion() {
     numAlojamientos = 0;
 }
 
-Anfitrion::Anfitrion(const char* doc, int ant, int punt, int* cods, int numCods) {
+Anfitrion::Anfitrion(const char* doc, int ant, float punt, int* cods, int numCods) {
     documento = new char[strlen(doc) + 1];
     strcpy(documento, doc);
     antiguedad = ant;
@@ -45,7 +45,6 @@ float Anfitrion::getPuntuacion() const {
 }
 
 
-
 //Esta funcion solo se uso de prueba para comprobar que el programara leyera correctamente la informacion del .txt, se borrara en un commit despues
 /*
 void Anfitrion::mostrarInfo() const {
@@ -66,7 +65,7 @@ void Anfitrion::mostrarInfo() const {
 }*/
 
 void Anfitrion::verReservas(Reservacion* reservas[], int totalReservas) const {
-    cout << "Reservas activas para el anfitrión con documento: " << documento << endl;
+    cout << "Reservas activas para el anfitrion con documento: " << documento << endl;
     bool encontrada = false;
 
     for (int i = 0; i < totalReservas; i++) {
@@ -84,7 +83,6 @@ void Anfitrion::verReservas(Reservacion* reservas[], int totalReservas) const {
             }
         }
     }
-
     if (!encontrada) {
         cout << "No se encontraron reservaciones para sus alojamientos.\n";
     }
@@ -97,7 +95,6 @@ void Anfitrion::actualizarHistorico(Reservacion* reservas[], int& totalReservas,
         cout << "No se pudo abrir el archivo reservas_historico.txt para escritura.\n";
         return;
     }
-
     int nuevasReservas = 0;
     Reservacion* nuevas[1000]; // temporal
 
@@ -115,10 +112,9 @@ void Anfitrion::actualizarHistorico(Reservacion* reservas[], int& totalReservas,
                 break;
             }
         }
-
         if (esDelAnfitrion && !reservas[i]->activa(fechaCorte)) {
             // Reservación terminada → mover a historico.txt
-            fprintf(historico, "%s;%s;%s;%02d/%02d/%04d;%d;%s;%.2f;%02d/%02d/%04d;%s\n",
+            fprintf(historico, "%s;%s;%s;%02d/%02d/%04d;%d;%s;%.0f;%02d/%02d/%04d;%s\n",
                     reservas[i]->getCodigo(),
                     reservas[i]->getDocumentoHuesped(),
                     reservas[i]->getCodigoAlojamiento(),
@@ -141,7 +137,6 @@ void Anfitrion::actualizarHistorico(Reservacion* reservas[], int& totalReservas,
             nuevas[nuevasReservas++] = reservas[i];
         }
     }
-
     fclose(historico);
     // Copiar solo las activas de vuelta al arreglo original
     for (int i = 0; i < nuevasReservas; i++) {
@@ -149,6 +144,6 @@ void Anfitrion::actualizarHistorico(Reservacion* reservas[], int& totalReservas,
     }
     totalReservas = nuevasReservas;
 
-    cout << "Reservas actualizadas. Las finalizadas se movieron al histórico.\n";
+    cout << "Reservas actualizadas. Las finalizadas se movieron al historico.\n";
 }
 
