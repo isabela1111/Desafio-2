@@ -187,7 +187,6 @@ void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inic
     remove("Alojamientos.txt");
     rename("temp.txt", "Alojamientos.txt");
 }
-
 void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, int duracion) {
     FILE* in = fopen("Alojamientos.txt", "r");
     FILE* temp = fopen("temp.txt", "w");
@@ -197,12 +196,10 @@ void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, 
         return;
     }
     char linea[1024];
-    char nuevasFechas[512];
-
     while (fgets(linea, sizeof(linea), in)) {
         char copia[1024];
         strcpy(copia, linea);
-        copia[strcspn(copia, "\n")] = 0;
+        copia[strcspn(copia, "\n")] = 0; // Eliminar salto de línea final
 
         char campos[10][256] = {};
         int count = 0;
@@ -213,14 +210,13 @@ void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, 
             count++;
             token = strtok(NULL, ";");
         }
+        if (strcmp(campos[0], cod) == 0) {
+            char nuevasFechas[512] = "";
 
-        if (count == 10 && strcmp(campos[0], cod) == 0) {
-            if (strlen(campos[9]) > 0) {
-                strncpy(nuevasFechas, campos[9], sizeof(nuevasFechas));
-            } else {
-                nuevasFechas[0] = '\0';
+            if (count == 10 && strlen(campos[9]) > 0) {
+                strncpy(nuevasFechas, campos[9], sizeof(nuevasFechas) - 1);
+                nuevasFechas[sizeof(nuevasFechas) - 1] = '\0';
             }
-
             for (int i = 0; i < duracion; i++) {
                 Fecha f = inicio.sumarDias(i);
                 char fechaStr[15];
@@ -229,12 +225,17 @@ void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, 
                 if (strlen(nuevasFechas) > 0) strcat(nuevasFechas, ",");
                 strcat(nuevasFechas, fechaStr);
             }
-
             for (int i = 0; i < 9; i++) {
                 fprintf(temp, "%s;", campos[i]);
             }
             fprintf(temp, "%s\n", nuevasFechas);
-        } else {
+
+            if (strcmp(this->codigo, cod) == 0) {
+                strncpy(this->fechasReservadas, nuevasFechas, sizeof(this->fechasReservadas) - 1);
+                this->fechasReservadas[sizeof(this->fechasReservadas) - 1] = '\0';
+            }
+        }
+        else {
             fputs(linea, temp);
         }
     }
@@ -243,6 +244,7 @@ void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, 
     remove("Alojamientos.txt");
     rename("temp.txt", "Alojamientos.txt");
 }
+
 
 bool Alojamiento::fechaOcupada(const Fecha& f) const {
     char buscada[12];

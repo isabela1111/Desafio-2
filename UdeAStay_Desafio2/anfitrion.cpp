@@ -15,7 +15,7 @@ Anfitrion::Anfitrion() {
     numAlojamientos = 0;
 }
 
-Anfitrion::Anfitrion(const char* doc, int ant, int punt, int* cods, int numCods) {
+Anfitrion::Anfitrion(const char* doc, int ant, float punt, int* cods, int numCods) {
     documento = new char[strlen(doc) + 1];
     strcpy(documento, doc);
     antiguedad = ant;
@@ -114,7 +114,7 @@ void Anfitrion::actualizarHistorico(Reservacion* reservas[], int& totalReservas,
         }
         if (esDelAnfitrion && !reservas[i]->activa(fechaCorte)) {
             // Reservación terminada → mover a historico.txt
-            fprintf(historico, "%s;%s;%s;%02d/%02d/%04d;%d;%s;%.2f;%02d/%02d/%04d;%s\n",
+            fprintf(historico, "%s;%s;%s;%02d/%02d/%04d;%d;%s;%.0f;%02d/%02d/%04d;%s\n",
                     reservas[i]->getCodigo(),
                     reservas[i]->getDocumentoHuesped(),
                     reservas[i]->getCodigoAlojamiento(),

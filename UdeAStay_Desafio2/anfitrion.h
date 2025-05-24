@@ -12,7 +12,7 @@ private:
 
 public:
     Anfitrion();
-    Anfitrion(const char* doc, int ant, int punt, int* cods, int numCods);
+    Anfitrion(const char* doc, int ant, float punt, int* cods, int numCods);
     ~Anfitrion();
     const char* getDocumento() const;
     float getPuntuacion() const;

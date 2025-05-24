@@ -35,7 +35,6 @@ public:
     bool activa(const Fecha& fechaCorte) const;
     bool realizarPago();
 
-
 };
 
 #endif 

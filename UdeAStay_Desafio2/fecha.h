@@ -20,7 +20,7 @@ public:
 
     bool esMenorQue(const Fecha& otra) const;
     bool esIgualA(const Fecha& otra) const;
-    void mostrar() const;   // <- Aquí faltaba el punto y coma
+    void mostrar() const;
     Fecha& operator=(const Fecha& otra);
     bool validarFecha() const;
     void imprimirFechaLarga() const;
