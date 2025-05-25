@@ -648,7 +648,8 @@ void UdeAStay::menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Res
         cout << "\n--- MENU ANFITRION ---\n";
         cout << "1. Ver reservas activas\n";
         cout << "2. Actualizar historico de reservas\n";
-        cout << "3. Volver al menu principal\n";
+        cout << "3. Anular una reservacion\n"; 
+        cout << "4. Volver al menu principal\n";
         cout << "Seleccione una opcion: ";
         cin >> opcion;
 
@@ -669,13 +670,20 @@ void UdeAStay::menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Res
             anfitrionActivo->actualizarHistorico(reservas, totalReservas, fechaCorte);
             break;
         }
-        case 3:
+        case 3: {  
+            char codigo[20];
+            cout << "Ingrese el código de la reserva que desea anular: ";
+            cin >> codigo;
+            anularReserva(codigo); 
+            break;
+        }
+        case 4:
             cout << "Regresando al menu principal...\n";
             break;
         default:
             cout << "Opcion invalida.\n";
         }
-    } while (opcion != 3);
+    } while (opcion != 4);
 }
 
 void UdeAStay::menuHuesped(const char* documento) {
