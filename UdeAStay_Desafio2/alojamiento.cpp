@@ -107,7 +107,6 @@ bool Alojamiento::disponibilidad(const Fecha& nuevaEntrada, int duracion, Reserv
     }
     for (int i = 0; i < cantidadReservas; i++) {
         Reservacion* res = reservas[i];
-
         if (strcmp(res->getCodigoAlojamiento(), codigo) == 0) {
             Fecha resInicio = res->getFechaInicio();
             Fecha resSalida = resInicio.sumarDias(res->getDuracion() - 1);
@@ -121,7 +120,6 @@ bool Alojamiento::disponibilidad(const Fecha& nuevaEntrada, int duracion, Reserv
     }
     return true;
 }
-
 
 void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inicio, int duracion) {
     FILE* in = fopen("Alojamientos.txt", "r");
@@ -245,7 +243,6 @@ void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, 
     rename("temp.txt", "Alojamientos.txt");
 }
 
-
 bool Alojamiento::fechaOcupada(const Fecha& f) const {
     char buscada[12];
     sprintf(buscada, "%02d/%02d/%04d", f.getDia(), f.getMes(), f.getAnio());
@@ -263,4 +260,3 @@ bool Alojamiento::fechaOcupada(const Fecha& f) const {
     }
     return false;
 }
-

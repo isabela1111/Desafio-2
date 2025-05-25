@@ -70,9 +70,6 @@ void UdeAStay::cargarHuespedes() {
         cout << "No se pudo abrir el archivo huespedes.txt" << endl;
         return;
     }
-    else {
-        cout << "Archivo abierto correctamente." << endl;
-    }
     char linea[256];
     int contador = 0;
     while (fgets(linea, 256, archivo)) {
@@ -154,7 +151,6 @@ void UdeAStay::cargarAnfitriones(Anfitrion* anfitriones[], int& totalAnfitriones
     fclose(archivo);
 }
 
-
 void UdeAStay::cargarAlojamientos() {
     FILE* archivo = fopen("Alojamientos.txt", "r");
     if (archivo == NULL) {
@@ -224,7 +220,6 @@ int UdeAStay::obtenerUltimoCodigoReserva() {
 
     char linea[256];
     int ultimo = 0;
-
     while (fgets(linea, sizeof(linea), archivo)) {
         char* token = strtok(linea, ";");
         if (token && token[0] == 'R') {

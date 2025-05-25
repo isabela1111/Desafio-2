@@ -87,7 +87,6 @@ bool Reservacion::realizarPago() {
             cout << "Metodo invalido. No se registro el pago.\n";
             return false;
         }
-
         int d, m, a;
         cout << "Ingrese la fecha de pago (dd mm aaaa): ";
         cin >> d >> m >> a;
@@ -97,7 +96,6 @@ bool Reservacion::realizarPago() {
             cout << "Fecha invalida. No se registro el pago.\n";
             return false;
         }
-
         if (monto <= 0) {
             cout << "Monto invalido. No se puede pagar.\n";
             return false;

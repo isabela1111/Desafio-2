@@ -67,9 +67,3 @@ void Huesped::consultarReservas(Reservacion** lista, int total){
     }
 }
 
-void Huesped::mostrarResumen() const {
-    cout << "Documento: " << documento
-         << ", Antiguedad: " << antiguedad
-         << ", Puntuacion: " << puntuacion << endl;
-}
-

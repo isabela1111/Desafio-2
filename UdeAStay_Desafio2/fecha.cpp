@@ -15,24 +15,10 @@ void Fecha::setDia(int d) { dia = d; }
 void Fecha::setMes(int m) { mes = m; }
 void Fecha::setAnio(int a) { anio = a; }
 
-void Fecha::mostrar() const {
-    if (dia < 10) std::cout << "0";
-    std::cout << dia << "/";
-
-    if (mes < 10) std::cout << "0";
-    std::cout << mes << "/";
-
-    std::cout << anio;
-}
-
 bool Fecha::esMenorQue(const Fecha& otra) const {
     if (anio != otra.anio) return anio < otra.anio;
     if (mes != otra.mes) return mes < otra.mes;
     return dia < otra.dia;
-}
-
-bool Fecha::esIgualA(const Fecha& otra) const {
-    return dia == otra.dia && mes == otra.mes && anio == otra.anio;
 }
 
 Fecha& Fecha::operator=(const Fecha& otra) {
