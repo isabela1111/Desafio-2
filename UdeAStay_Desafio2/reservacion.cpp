@@ -62,12 +62,11 @@ bool Reservacion::activa(const Fecha& fechaCorte) const {
 
 bool Reservacion::realizarPago() {
     char respuesta[5];
-    cout << "¿Desea pagar ahora? (si/no): ";
+    cout << "Desea pagar ahora? (si/no): ";
     cin >> respuesta;
 
     if (strcmp(respuesta, "si") == 0 || strcmp(respuesta, "SI") == 0) {
         cout << "Monto total a pagar: $" << monto << endl;
-
         int opcion;
         cout << "Seleccione el metodo de pago:\n";
         cout << "1. PSE\n";

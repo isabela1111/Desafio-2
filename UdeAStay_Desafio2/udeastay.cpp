@@ -22,18 +22,19 @@ UdeAStay::UdeAStay() {
     capacidadReservas = 300;
     totalReservas = 0;
     reservas = new Reservacion*[capacidadReservas];
+    fechaCorteDefinida = false;
 
     cargarHuespedes();
     cargarAlojamientos();
     anfitriones = new Anfitrion*[100];
     cargarAnfitriones(anfitriones, totalAnfitriones, 100);
     cargarReservaciones();
+    cargarFechaCorteDesdeArchivo();
 }
 
 UdeAStay::~UdeAStay() {
     delete[] huespedes;
     delete[] alojamientos;
-
     for (int i = 0; i < totalReservas; i++) {
         delete reservas[i];
     }
@@ -83,7 +84,6 @@ void UdeAStay::cargarHuespedes() {
     rewind(archivo);
     huespedes = new Huesped[contador];
     totalHuespedes = 0;
-
     while (fgets(linea, 256, archivo)) {
         linea[strcspn(linea, "\r\n")] = 0;
 
@@ -123,7 +123,6 @@ void UdeAStay::cargarAnfitriones(Anfitrion* anfitriones[], int& totalAnfitriones
 
     while (fgets(linea, 256, archivo) && totalAnfitriones < maxAnfitriones) {
         linea[strcspn(linea, "\n")] = '\0';
-
         char* documento = strtok(linea, ";");
         char* strAntiguedad = strtok(NULL, ";");
         char* strPuntuacion = strtok(NULL, ";");
@@ -159,12 +158,10 @@ void UdeAStay::cargarAlojamientos() {
     }
     char linea[300];
     int contador = 0;
-
     while (fgets(linea, sizeof(linea), archivo)) {
         if (strlen(linea) > 1) contador++;
     }
     rewind(archivo);
-
     alojamientos = new Alojamiento[contador];
     totalAlojamientos = contador;
 
@@ -206,246 +203,11 @@ void UdeAStay::cargarAlojamientos() {
             strncpy(fechas, token, sizeof(fechas) - 1);
             fechas[sizeof(fechas) - 1] = '\0';
         }
-
         alojamientos[i] = Alojamiento(cod, nom, docAnf, depto, muni, tipo, dir, precio, amen, fechas);
         i++;
     }
     fclose(archivo);
 }
-
-
-int UdeAStay::obtenerUltimoCodigoReserva() {
-    FILE* archivo = fopen("Reservaciones_activas.txt", "r");
-    if (!archivo) return 0;
-
-    char linea[256];
-    int ultimo = 0;
-    while (fgets(linea, sizeof(linea), archivo)) {
-        char* token = strtok(linea, ";");
-        if (token && token[0] == 'R') {
-            int num = atoi(token + 1);
-            if (num > ultimo) ultimo = num;
-        }
-    }
-    fclose(archivo);
-    return ultimo;
-}
-
-
-float UdeAStay::obtenerPuntuacionAnfitrion(const char* doc)const{
-    for (int i = 0; i < totalAnfitriones; i++) {
-        if (strcmp(anfitriones[i]->getDocumento(), doc) == 0)
-            return anfitriones[i]->getPuntuacion();
-    }
-    return 0.0;
-}
-
-
-void UdeAStay::aplicarFiltros(const char* municipio, const Fecha& inicio, int noches, float precioMax, float puntMin) const {
-    cout << "\n--- ALOJAMIENTOS DISPONIBLES ---\n";
-    bool alguno = false;
-
-    for (int i = 0; i < totalAlojamientos; i++) {
-        const Alojamiento& a = alojamientos[i];
-        if (!igualesSinMayusculasYEspacios(a.getMunicipio(), municipio))
-            continue;
-        if (precioMax > 0 && a.getPrecioPorNoche() > precioMax)
-            continue;
-        if (puntMin > 0) {
-            float puntAnfitrion = obtenerPuntuacionAnfitrion(a.getDocumentoAnfitrion());
-            if (puntAnfitrion < puntMin)
-                continue;
-        }
-        if (!a.disponibilidad(inicio, noches, reservas, totalReservas))
-            continue;
-        a.mostrar();
-        alguno = true;
-    }
-    if (!alguno) {
-        cout << "No hay alojamientos que cumplan con los filtros indicados.\n";
-    }
-}
-
-void UdeAStay::guardarReservacionEnArchivo(const Reservacion& r) {
-    FILE* archivo = fopen("Reservaciones_activas.txt", "a");
-    if (!archivo) {
-        cout << "No se pudo abrir reservas.txt para escribir.\n";
-        return;
-    }
-    fprintf(archivo, "%s;%s;%s;%d/%d/%d;%d;%s;%.0f;%d/%d/%d;%s\n",
-            r.getCodigo(),
-            r.getDocumentoHuesped(),
-            r.getCodigoAlojamiento(),
-            r.getFechaInicio().getDia(),
-            r.getFechaInicio().getMes(),
-            r.getFechaInicio().getAnio(),
-            r.getDuracion(),
-            r.getMetodoPago(),
-            r.getMonto(),
-            r.getFechaPago().getDia(),
-            r.getFechaPago().getMes(),
-            r.getFechaPago().getAnio(),
-            r.getAnotaciones()
-            );
-    fclose(archivo);
-}
-
-void UdeAStay::agregarReserva(Reservacion* nueva) {
-    if (totalReservas >= capacidadReservas) {
-        int nuevaCapacidad = capacidadReservas * 2;
-        Reservacion** nuevoArray = new Reservacion*[nuevaCapacidad];
-        for (int i = 0; i < totalReservas; i++) {
-            nuevoArray[i] = reservas[i];
-        }
-        delete[] reservas;
-        reservas = nuevoArray;
-        capacidadReservas = nuevaCapacidad;
-    }
-    reservas[totalReservas++] = nueva;
-}
-
-void UdeAStay::menuReservar() {
-    cout << "\n--- RESERVACION DE ALOJAMIENTO ---\n";
-    char municipio[30];
-    cout << "Ingrese el municipio que desea buscar: ";
-    cin.ignore();
-    cin.getline(municipio, sizeof(municipio));
-
-    int dia, mes, anio;
-    cout << "Ingrese la fecha de entrada (dd mm aaaa): ";
-    cin >> dia >> mes >> anio;
-    if (cin.fail()) {
-        cin.clear();
-        cin.ignore(1000, '\n');
-        cout << "Error: Entrada invalida.\n";
-        return;
-    }
-    Fecha entrada(dia, mes, anio);
-    if (!entrada.validarFecha()) {
-        cout << "Error: Fecha invalida.\n";
-        return;
-    }
-    int noches;
-    cout << "Cantidad de noches: ";
-    cin >> noches;
-    if (cin.fail() || noches <= 0) {
-        cout << "Error: Duracion invalida.\n";
-        return;
-    }
-    float maxPrecio = 9999999;
-    float minPuntuacion = 0.0;
-    char usarFiltro;
-    cout << "¿Desea usar filtros? (s/n): ";
-    cin >> usarFiltro;
-
-    if (usarFiltro == 's' || usarFiltro == 'S') {
-        char tipoFiltro;
-        cout << "Que filtro desea aplicar?\n";
-        cout << "a) Precio maximo\n";
-        cout << "b) Puntuacion minima\n";
-        cout << "c) Ambos\n";
-        cout << "Seleccione una opcion (a/b/c): ";
-        cin >> tipoFiltro;
-
-        if (tipoFiltro == 'a' || tipoFiltro == 'c') {
-            cout << "Ingrese precio maximo por noche: ";
-            cin >> maxPrecio;
-            if (cin.fail() || maxPrecio <= 0) {
-                cout << "Error: Precio invalido.\n";
-                return;
-            }
-        }
-        if (tipoFiltro == 'b' || tipoFiltro == 'c') {
-            cout << "Ingrese puntuacion minima del anfitrion (0.0 a 5.0): ";
-            cin >> minPuntuacion;
-            if (cin.fail() || minPuntuacion < 0.0 || minPuntuacion > 5.0) {
-                cout << "Error: Puntuacion invalida.\n";
-                return;
-            }
-        }
-    }
-    bool hayDisponibles = false;
-    for (int i = 0; i < totalAlojamientos; i++) {
-        if (igualesSinMayusculasYEspacios(alojamientos[i].getMunicipio(), municipio) &&
-            alojamientos[i].getPrecioPorNoche() <= maxPrecio &&
-            obtenerPuntuacionAnfitrion(alojamientos[i].getDocumentoAnfitrion()) >= minPuntuacion &&
-            alojamientos[i].disponibilidad(entrada, noches, reservas, totalReservas)) {
-            hayDisponibles = true;
-            break;
-        }
-    }
-    if (!hayDisponibles) {
-        cout << "No hay alojamientos disponibles con esos filtros.\n";
-        return;
-    }
-    aplicarFiltros(municipio, entrada, noches, maxPrecio, minPuntuacion);
-
-    cout << "Ingrese el codigo del alojamiento que desea reservar: ";
-    char codAloj[10];
-    cin >> codAloj;
-
-    Alojamiento* seleccionado = nullptr;
-    for (int i = 0; i < totalAlojamientos; i++) {
-        if (strcmp(alojamientos[i].getCodigo(), codAloj) == 0 &&
-            alojamientos[i].disponibilidad(entrada, noches, reservas, totalReservas)) {
-            seleccionado = &alojamientos[i];
-            break;
-        }
-    }
-    if (!seleccionado) {
-        cout << "Error: Alojamiento no valido o no disponible.\n";
-        return;
-    }
-    char docH[20];
-    cout << "Ingrese su documento de identidad: ";
-    cin >> docH;
-
-    Huesped* huesped = nullptr;
-    for (int i = 0; i < totalHuespedes; i++) {
-        if (strcmp(huespedes[i].getDocumento(), docH) == 0) {
-            huesped = &huespedes[i];
-            break;
-        }
-    }
-    if (!huesped) {
-        cout << "Error: Huesped no encontrado.\n";
-        return;
-    }
-    if (!huesped->verificarReservas(entrada, noches, reservas, totalReservas)) {
-        cout << "Ya tienes reservas en esas fechas.\n";
-        return;
-    }
-    float monto = seleccionado->getPrecioPorNoche() * noches;
-    char anotaciones[1001] = "";
-    cout << "Ingrese anotaciones (opcional): ";
-    cin.ignore();
-    cin.getline(anotaciones, 1000);
-
-    char codReserva[10];
-    sprintf(codReserva, "R%03d", obtenerUltimoCodigoReserva() + 1);
-
-    Reservacion* nueva = new Reservacion(codReserva, docH, codAloj, entrada, noches, "", monto, Fecha(), anotaciones);
-    if (!nueva->realizarPago()) {
-        cout << "Reserva cancelada.\n";
-        delete nueva;
-        return;
-    }
-    agregarReserva(nueva);
-    guardarReservacionEnArchivo(*nueva);
-    seleccionado->agregarFechasReservadas(codAloj, entrada, noches);
-    cargarAlojamientos();
-
-    Fecha fin = entrada.sumarDias(noches - 1);
-    cout << "\n--- COMPROBANTE DE RESERVA ---\n";
-    cout << "Codigo: " << codReserva << endl;
-    cout << "Usuario: " << docH << endl;
-    cout << "Alojamiento: " << seleccionado->getNombre() << " (" << codAloj << ")\n";
-    cout << "Fecha inicio: "; entrada.imprimirFechaLarga();
-    cout << "Fecha fin: "; fin.imprimirFechaLarga();
-    cout << "Monto pagado: $" << monto << endl;
-    cout << "------------------------------\n";
-}
-
 
 void UdeAStay::cargarReservaciones() {
     FILE* archivo = fopen("Reservaciones_activas.txt", "r");
@@ -505,6 +267,134 @@ void UdeAStay::cargarReservaciones() {
     fclose(archivo);
 }
 
+void UdeAStay::cargarFechaCorteDesdeArchivo() {
+    FILE* f = fopen("FechaCorte.txt", "r");
+    if (!f) return;
+    int d, m, a;
+    if (fscanf(f, "%d/%d/%d", &d, &m, &a) == 3) {
+        fechaCorte = Fecha(d, m, a);
+        fechaCorteDefinida = true;
+    }
+    fclose(f);
+}
+
+void UdeAStay::guardarReservacionEnArchivo(const Reservacion& r) {
+    FILE* archivo = fopen("Reservaciones_activas.txt", "a");
+    if (!archivo) {
+        cout << "No se pudo abrir reservas.txt para escribir.\n";
+        return;
+    }
+    fprintf(archivo, "%s;%s;%s;%d/%d/%d;%d;%s;%.0f;%d/%d/%d;%s\n",
+            r.getCodigo(),
+            r.getDocumentoHuesped(),
+            r.getCodigoAlojamiento(),
+            r.getFechaInicio().getDia(),
+            r.getFechaInicio().getMes(),
+            r.getFechaInicio().getAnio(),
+            r.getDuracion(),
+            r.getMetodoPago(),
+            r.getMonto(),
+            r.getFechaPago().getDia(),
+            r.getFechaPago().getMes(),
+            r.getFechaPago().getAnio(),
+            r.getAnotaciones()
+            );
+    fclose(archivo);
+}
+
+void UdeAStay::guardarFechaCorteEnArchivo() {
+    FILE* f = fopen("FechaCorte.txt", "w");
+    if (!f) {
+        cout << "Error al guardar la fecha de corte.\n";
+        return;
+    }
+    fprintf(f, "%02d/%02d/%04d", fechaCorte.getDia(), fechaCorte.getMes(), fechaCorte.getAnio());
+    fclose(f);
+}
+
+
+void UdeAStay::agregarReserva(Reservacion* nueva) {
+    if (totalReservas >= capacidadReservas) {
+        int nuevaCapacidad = capacidadReservas * 2;
+        Reservacion** nuevoArray = new Reservacion*[nuevaCapacidad];
+        for (int i = 0; i < totalReservas; i++) {
+            nuevoArray[i] = reservas[i];
+        }
+        delete[] reservas;
+        reservas = nuevoArray;
+        capacidadReservas = nuevaCapacidad;
+    }
+    reservas[totalReservas++] = nueva;
+}
+
+bool UdeAStay::huespedExiste(const char* documento) const {
+    for (int i = 0; i < totalHuespedes; i++) {
+        if (strcmp(huespedes[i].getDocumento(), documento) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool UdeAStay::anfitrionExiste(const char* documento) const {
+    for (int i = 0; i < totalAnfitriones; i++) {
+        if (strcmp(anfitriones[i]->getDocumento(), documento) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+int UdeAStay::obtenerUltimoCodigoReserva() {
+    FILE* archivo = fopen("Reservaciones_activas.txt", "r");
+    if (!archivo) return 0;
+
+    char linea[256];
+    int ultimo = 0;
+    while (fgets(linea, sizeof(linea), archivo)) {
+        char* token = strtok(linea, ";");
+        if (token && token[0] == 'R') {
+            int num = atoi(token + 1);
+            if (num > ultimo) ultimo = num;
+        }
+    }
+    fclose(archivo);
+    return ultimo;
+}
+
+float UdeAStay::obtenerPuntuacionAnfitrion(const char* doc)const{
+    for (int i = 0; i < totalAnfitriones; i++) {
+        if (strcmp(anfitriones[i]->getDocumento(), doc) == 0)
+            return anfitriones[i]->getPuntuacion();
+    }
+    return 0.0;
+}
+
+void UdeAStay::aplicarFiltros(const char* municipio, const Fecha& inicio, int noches, float precioMax, float puntMin) const {
+    cout << "\n--- ALOJAMIENTOS DISPONIBLES ---\n";
+    bool alguno = false;
+
+    for (int i = 0; i < totalAlojamientos; i++) {
+        const Alojamiento& a = alojamientos[i];
+        if (!igualesSinMayusculasYEspacios(a.getMunicipio(), municipio))
+            continue;
+        if (precioMax > 0 && a.getPrecioPorNoche() > precioMax)
+            continue;
+        if (puntMin > 0) {
+            float puntAnfitrion = obtenerPuntuacionAnfitrion(a.getDocumentoAnfitrion());
+            if (puntAnfitrion < puntMin)
+                continue;
+        }
+        if (!a.disponibilidad(inicio, noches, reservas, totalReservas))
+            continue;
+        a.mostrar();
+        alguno = true;
+    }
+    if (!alguno) {
+        cout << "No hay alojamientos que cumplan con los filtros indicados.\n";
+    }
+}
+
 void UdeAStay::anularReserva(const char* codigoReservaEliminar) {
     FILE* original = fopen("Reservaciones_activas.txt", "r");
     FILE* temp = fopen("temp.txt", "w");
@@ -545,7 +435,6 @@ void UdeAStay::anularReserva(const char* codigoReservaEliminar) {
     }
     fclose(original);
     fclose(temp);
-
     remove("Reservaciones_activas.txt");
     rename("temp.txt", "Reservaciones_activas.txt");
     if (encontrada) {
@@ -570,6 +459,234 @@ void UdeAStay::anularReserva(const char* codigoReservaEliminar) {
     else {
         cout << "No se encontro la reservacion con ese codigo.\n";
     }
+}
+
+void UdeAStay::actualizarHistorico() {
+    if (!fechaCorteDefinida) {
+        cout << "No hay fecha de corte definida.\n";
+        return;
+    }
+    FILE* archivoIn = fopen("Reservaciones_activas.txt", "r");
+    FILE* archivoHist = fopen("Historico.txt", "a");
+    if (!archivoIn || !archivoHist) {
+        cout << "Error al abrir archivos.\n";
+        if (archivoIn) fclose(archivoIn);
+        if (archivoHist) fclose(archivoHist);
+        return;
+    }
+    char codigosAEliminar[300][15];
+    int cantidadAEliminar = 0;
+
+    char linea[1024];
+    while (fgets(linea, sizeof(linea), archivoIn)) {
+        char copia[1024];
+        strcpy(copia, linea);
+        copia[strcspn(copia, "\n")] = '\0';
+
+        char* token = strtok(copia, ";");
+        if (!token) continue;
+        char codReserva[15]; strcpy(codReserva, token);
+
+        token = strtok(NULL, ";");
+        token = strtok(NULL, ";"); if (!token) continue;
+        char codAloj[10]; strcpy(codAloj, token);
+
+        token = strtok(NULL, ";"); if (!token) continue;
+        int d, m, a;
+        sscanf(token, "%d/%d/%d", &d, &m, &a);
+        Fecha entrada(d, m, a);
+
+        token = strtok(NULL, ";"); if (!token) continue;
+        int duracion = atoi(token);
+        Fecha salida = entrada.sumarDias(duracion - 1);
+
+        if (salida.esMenorQue(fechaCorte)) {
+            fputs(linea, archivoHist);
+            strcpy(codigosAEliminar[cantidadAEliminar++], codReserva);
+        }
+    }
+    fclose(archivoIn);
+    fclose(archivoHist);
+    for (int i = 0; i < cantidadAEliminar; i++) {
+        anularReserva(codigosAEliminar[i]);
+    }
+    cout << "Reservas finalizadas pasadas al historico.\n";
+}
+
+void UdeAStay::menuReservar() {
+    if (!fechaCorteDefinida) {
+        cout << "Aun no se ha definido una fecha de corte.\n";
+        cout << "Un anfitrion debe actualizar el historico antes de poder hacer reservas.\n";
+        return;
+    }
+    cout << "\n--- RESERVACION DE ALOJAMIENTO ---\n";
+    cout << "Como desea buscar alojamiento?\n";
+    cout << "a) Por municipio y filtros\n";
+    cout << "b) Directamente por codigo del alojamiento\n";
+    char opcionBusqueda;
+    cin >> opcionBusqueda;
+    int dia, mes, anio;
+    cout << "Ingrese la fecha de entrada (dd mm aaaa): ";
+    cin >> dia >> mes >> anio;
+    if (cin.fail()) {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Error: Entrada invalida.\n";
+        return;
+    }
+    Fecha entrada(dia, mes, anio);
+    if (!entrada.validarFecha()) {
+        cout << "Error: Fecha invalida.\n";
+        return;
+    }
+    int noches;
+    cout << "Cantidad de noches: ";
+    cin >> noches;
+    if (cin.fail() || noches <= 0) {
+        cout << "Error: Duracion invalida.\n";
+        return;
+    }
+    Fecha finReserva = entrada.sumarDias(noches - 1);
+    Fecha limite = fechaCorte.sumarMeses(12);
+    if (entrada.esMenorQue(fechaCorte) || finReserva.esMayorQue(limite)) {
+        cout << "Error: Solo se permiten reservaciones entre ";
+        fechaCorte.imprimirFechaLarga();
+        cout << " y ";
+        limite.imprimirFechaLarga();
+        cout << ".\n";
+        return;
+    }
+    char docH[20];
+    cout << "Ingrese su documento de identidad: ";
+    cin >> docH;
+    Huesped* huesped = nullptr;
+    for (int i = 0; i < totalHuespedes; i++) {
+        if (strcmp(huespedes[i].getDocumento(), docH) == 0) {
+            huesped = &huespedes[i];
+            break;
+        }
+    }
+    if (!huesped) {
+        cout << "Error: Huesped no encontrado.\n";
+        return;
+    }
+    if (!huesped->verificarReservas(entrada, noches, reservas, totalReservas)) {
+        cout << "Ya tienes reservas en esas fechas.\n";
+        return;
+    }
+    Alojamiento* seleccionado = nullptr;
+    if (opcionBusqueda == 'a' || opcionBusqueda == 'A') {
+        char municipio[30];
+        cout << "Ingrese el municipio que desea buscar: ";
+        cin.ignore();
+        cin.getline(municipio, sizeof(municipio));
+
+        float maxPrecio = 9999999;
+        float minPuntuacion = 0.0;
+        char usarFiltro;
+        cout << "Desea usar filtros? (s/n): ";
+        cin >> usarFiltro;
+        if (usarFiltro == 's' || usarFiltro == 'S') {
+            char tipoFiltro;
+            cout << "Que filtro desea aplicar?\n";
+            cout << "a) Precio maximo\nb) Puntuacion minima\nc) Ambos\n";
+            cin >> tipoFiltro;
+            if (tipoFiltro == 'a' || tipoFiltro == 'c') {
+                cout << "Ingrese precio maximo por noche: ";
+                cin >> maxPrecio;
+            }
+            if (tipoFiltro == 'b' || tipoFiltro == 'c') {
+                cout << "Ingrese puntuacion minima del anfitrion: ";
+                cin >> minPuntuacion;
+            }
+        }
+        bool hayDisponibles = false;
+        for (int i = 0; i < totalAlojamientos; i++) {
+            if (igualesSinMayusculasYEspacios(alojamientos[i].getMunicipio(), municipio) &&
+                alojamientos[i].getPrecioPorNoche() <= maxPrecio &&
+                obtenerPuntuacionAnfitrion(alojamientos[i].getDocumentoAnfitrion()) >= minPuntuacion &&
+                alojamientos[i].disponibilidad(entrada, noches, reservas, totalReservas)) {
+                hayDisponibles = true;
+                break;
+            }
+        }
+
+        if (!hayDisponibles) {
+            cout << "No hay alojamientos disponibles con esos filtros.\n";
+            return;
+        }
+
+        aplicarFiltros(municipio, entrada, noches, maxPrecio, minPuntuacion);
+
+        cout << "Ingrese el codigo del alojamiento que desea reservar(si no desea ninguno ingrese 0): ";
+        char codAloj[10];
+        cin >> codAloj;
+        for (int i = 0; i < totalAlojamientos; i++) {
+            if (strcmp(alojamientos[i].getCodigo(), codAloj) == 0 &&
+                alojamientos[i].disponibilidad(entrada, noches, reservas, totalReservas)) {
+                seleccionado = &alojamientos[i];
+                break;
+            }
+        }
+    }
+    else if (opcionBusqueda == 'b' || opcionBusqueda == 'B') {
+        cout << "Ingrese el codigo del alojamiento: ";
+        char codAloj[10];
+        cin >> codAloj;
+
+        for (int i = 0; i < totalAlojamientos; i++) {
+            if (strcmp(alojamientos[i].getCodigo(), codAloj) == 0 &&
+                alojamientos[i].disponibilidad(entrada, noches, reservas, totalReservas)) {
+                seleccionado = &alojamientos[i];
+                break;
+            }
+        }
+
+        if (!seleccionado) {
+            cout << "Alojamiento no disponible o codigo invalido.\n";
+            return;
+        }
+    }
+    else {
+        cout << "Opcion invalida.\n";
+        return;
+    }
+
+    if (!seleccionado) {
+        cout << "Error: No se pudo seleccionar alojamiento.\n";
+        return;
+    }
+
+    float monto = seleccionado->getPrecioPorNoche() * noches;
+    char anotaciones[1001] = "";
+    cout << "Ingrese anotaciones (opcional): ";
+    cin.ignore();
+    cin.getline(anotaciones, 1000);
+
+    char codReserva[10];
+    sprintf(codReserva, "R%03d", obtenerUltimoCodigoReserva() + 1);
+
+    Reservacion* nueva = new Reservacion(codReserva, docH, seleccionado->getCodigo(), entrada, noches, "", monto, Fecha(), anotaciones);
+    if (!nueva->realizarPago()) {
+        cout << "Reserva cancelada.\n";
+        delete nueva;
+        return;
+    }
+
+    agregarReserva(nueva);
+    guardarReservacionEnArchivo(*nueva);
+    seleccionado->agregarFechasReservadas(seleccionado->getCodigo(), entrada, noches);
+    cargarAlojamientos();
+
+    Fecha fin = entrada.sumarDias(noches - 1);
+    cout << "\n--- COMPROBANTE DE RESERVA ---\n";
+    cout << "Codigo: " << codReserva << endl;
+    cout << "Usuario: " << docH << endl;
+    cout << "Alojamiento: " << seleccionado->getNombre() << " (" << seleccionado->getCodigo() << ")\n";
+    cout << "Fecha inicio: "; entrada.imprimirFechaLarga();
+    cout << "Fecha fin: "; fin.imprimirFechaLarga();
+    cout << "Monto pagado: $" << monto << endl;
+    cout << "------------------------------\n";
 }
 
 
@@ -601,23 +718,6 @@ void UdeAStay::menuAnularReservaComoHuesped(const char* documentoHuesped) {
     anularReserva(codigo);
 }
 
-bool UdeAStay::huespedExiste(const char* documento) const {
-    for (int i = 0; i < totalHuespedes; i++) {
-        if (strcmp(huespedes[i].getDocumento(), documento) == 0) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool UdeAStay::anfitrionExiste(const char* documento) const {
-    for (int i = 0; i < totalAnfitriones; i++) {
-        if (strcmp(anfitriones[i]->getDocumento(), documento) == 0) {
-            return true;
-        }
-    }
-    return false;
-}
 
 void UdeAStay::menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Reservacion* reservas[], int& totalReservas) {
     char documento[20];
@@ -643,7 +743,8 @@ void UdeAStay::menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Res
         cout << "\n--- MENU ANFITRION ---\n";
         cout << "1. Ver reservas activas\n";
         cout << "2. Actualizar historico de reservas\n";
-        cout << "3. Volver al menu principal\n";
+        cout << "3. Anular una reservacion\n";
+        cout << "4. Volver al menu principal\n";
         cout << "Seleccione una opcion: ";
         cin >> opcion;
 
@@ -652,25 +753,48 @@ void UdeAStay::menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Res
             anfitrionActivo->verReservas(reservas, totalReservas);
             break;
         case 2: {
-            int d, m, a;
-            cout << "Ingrese fecha de corte (dd mm aaaa): ";
-            cin >> d >> m >> a;
-            Fecha fechaCorte(d, m, a);
+            if (fechaCorteDefinida) {
+                cout << "La fecha de corte actual es: ";
+                fechaCorte.imprimirFechaLarga();
+                cout << endl;
+            } else {
+                cout << "No hay una fecha de corte definida aun.\n";}
 
-            if (!fechaCorte.validarFecha()) {
+            int d, m, a;
+            cout << "Ingrese nueva fecha de corte (dd mm aaaa): ";
+            cin >> d >> m >> a;
+
+            Fecha nuevaCorte(d, m, a);
+            if (!nuevaCorte.validarFecha()) {
                 cout << "Fecha invalida.\n";
                 break;
             }
-            anfitrionActivo->actualizarHistorico(reservas, totalReservas, fechaCorte);
+            if (fechaCorteDefinida && !fechaCorte.esMenorQue(nuevaCorte)) {
+                cout << "La nueva fecha debe ser mayor que la actual.\n";
+                break;
+            }
+            fechaCorte = nuevaCorte;
+            fechaCorteDefinida = true;
+            guardarFechaCorteEnArchivo();
+            actualizarHistorico();
             break;
         }
-        case 3:
-            cout << "Regresando al menu principal...\n";
+        case 3: {
+            char codigo[20];
+            cout << "Ingrese el codigo de la reserva que desea anular: ";
+            cin >> codigo;
+            anularReserva(codigo);
             break;
+        }
+        case 4:
+            cout << "Regresando al menu principal...\n";
+                  system("cls");
+            break;
+
         default:
             cout << "Opcion invalida.\n";
         }
-    } while (opcion != 3);
+    } while (opcion != 4);
 }
 
 void UdeAStay::menuHuesped(const char* documento) {
@@ -694,26 +818,22 @@ void UdeAStay::menuHuesped(const char* documento) {
         cout << "4. Salir\n";
         cout << "Seleccione una opcion: ";
         cin >> opcion;
-
         switch (opcion) {
         case 1:
             menuReservar();
             break;
-
         case 2:
             huesped->consultarReservas(reservas, totalReservas);
             break;
-
         case 3:
             menuAnularReservaComoHuesped(documento);
             break;
-
         case 4:
             cout << "Saliendo del menu de huesped...\n";
+            system("cls");
             break;
-
         default:
-            cout << "Opción invalida.\n";
+            cout << "Opcion invalida.\n";
             break;
         }
     } while (opcion != 4);

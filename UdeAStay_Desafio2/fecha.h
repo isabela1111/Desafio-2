@@ -24,6 +24,10 @@ public:
     void imprimirFechaLarga() const;
     Fecha sumarDias(int dias) const;
     int comparar(const Fecha& otra) const;
+    Fecha sumarMeses(int meses) const;
+    bool esMayorQue(const Fecha& otra) const;
+
+
 };
 
 #endif
