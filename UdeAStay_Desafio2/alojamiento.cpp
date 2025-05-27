@@ -1,4 +1,5 @@
 #include "alojamiento.h"
+#include "medicionderecursos.h"
 #include <cstring>
 #include <iostream>
 using namespace std;
@@ -94,12 +95,14 @@ void Alojamiento::mostrar() const {
 
 bool Alojamiento::disponibilidad(const Fecha& nuevaEntrada, int duracion, Reservacion** reservas, int cantidadReservas) const {
     for (int i = 0; i < duracion; i++) {
+        medicionderecursos::contarCiclo();
         Fecha dia = nuevaEntrada.sumarDias(i);
         if (fechaOcupada(dia)) {
             return false;
         }
     }
     for (int i = 0; i < cantidadReservas; i++) {
+        medicionderecursos::contarCiclo();
         Reservacion* res = reservas[i];
         if (strcmp(res->getCodigoAlojamiento(), codigo) == 0) {
             Fecha resInicio = res->getFechaInicio();
@@ -126,10 +129,12 @@ void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inic
     char fechasAEliminar[12][15];
 
     for (int i = 0; i < duracion; i++) {
+        medicionderecursos::contarCiclo();
         Fecha f = inicio.sumarDias(i);
         sprintf(fechasAEliminar[i], "%02d/%02d/%04d", f.getDia(), f.getMes(), f.getAnio());
     }
     while (fgets(linea, sizeof(linea), in)) {
+        medicionderecursos::contarCiclo();
         char copia[1024];
         strcpy(copia, linea);
         copia[strcspn(copia, "\n")] = 0;
@@ -139,6 +144,7 @@ void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inic
 
         char* token = strtok(copia, ";");
         while (token != NULL && count < 10) {
+            medicionderecursos::contarCiclo();
             strcpy(campos[count++], token);
             token = strtok(NULL, ";");
         }
@@ -148,6 +154,7 @@ void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inic
             bool primera = true;
 
             while (fechaToken) {
+                medicionderecursos::contarCiclo();
                 bool eliminar = false;
                 for (int i = 0; i < duracion; i++) {
                     if (strcmp(fechaToken, fechasAEliminar[i]) == 0) {
@@ -163,6 +170,7 @@ void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inic
                 fechaToken = strtok(NULL, ",");
             }
             for (int i = 0; i < 9; i++) {
+                medicionderecursos::contarCiclo();
                 fprintf(temp, "%s;", campos[i]);
             }
             fprintf(temp, "%s\n", nuevasFechas);
@@ -185,6 +193,7 @@ void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, 
     }
     char linea[1024];
     while (fgets(linea, sizeof(linea), in)) {
+        medicionderecursos::contarCiclo();
         char copia[1024];
         strcpy(copia, linea);
         copia[strcspn(copia, "\n")] = 0;
@@ -193,6 +202,7 @@ void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, 
         int count = 0;
         char* token = strtok(copia, ";");
         while (token && count < 10) {
+            medicionderecursos::contarCiclo();
             strncpy(campos[count], token, sizeof(campos[count]) - 1);
             campos[count][sizeof(campos[count]) - 1] = '\0';
             count++;
@@ -206,6 +216,7 @@ void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, 
                 nuevasFechas[sizeof(nuevasFechas) - 1] = '\0';
             }
             for (int i = 0; i < duracion; i++) {
+                medicionderecursos::contarCiclo();
                 Fecha f = inicio.sumarDias(i);
                 char fechaStr[15];
                 sprintf(fechaStr, "%02d/%02d/%04d", f.getDia(), f.getMes(), f.getAnio());
@@ -214,6 +225,7 @@ void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, 
                 strcat(nuevasFechas, fechaStr);
             }
             for (int i = 0; i < 9; i++) {
+                medicionderecursos::contarCiclo();
                 fprintf(temp, "%s;", campos[i]);
             }
             fprintf(temp, "%s\n", nuevasFechas);
@@ -241,6 +253,7 @@ bool Alojamiento::fechaOcupada(const Fecha& f) const {
     copia[sizeof(copia) - 1] = '\0';
     char* token = strtok(copia, ",");
     while (token != NULL) {
+        medicionderecursos::contarCiclo();
         if (strcmp(token, buscada) == 0) {
             return true;
         }
