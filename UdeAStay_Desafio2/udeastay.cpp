@@ -908,6 +908,7 @@ void UdeAStay::menuPrincipal() {
             break;
         case 3:
             cout << "Saliendo del sistema...\n";
+            medicionderecursos::mostrarResumen();
             break;
         default:
             cout << "Opcion invalida.\n";
