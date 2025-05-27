@@ -1,4 +1,5 @@
 #include "udeastay.h"
+#include "medicionderecursos.h"
 #include "reservacion.h"
 #include "fecha.h"
 #include "alojamiento.h"
@@ -22,11 +23,13 @@ UdeAStay::UdeAStay() {
     capacidadReservas = 300;
     totalReservas = 0;
     reservas = new Reservacion*[capacidadReservas];
+    medicionderecursos::agregarMemoria(sizeof(reservas));
     fechaCorteDefinida = false;
 
     cargarHuespedes();
     cargarAlojamientos();
     anfitriones = new Anfitrion*[100];
+    medicionderecursos::agregarMemoria(100*sizeof(anfitriones));
     cargarAnfitriones(anfitriones, totalAnfitriones, 100);
     cargarReservaciones();
     cargarFechaCorteDesdeArchivo();
@@ -36,11 +39,13 @@ UdeAStay::~UdeAStay() {
     delete[] huespedes;
     delete[] alojamientos;
     for (int i = 0; i < totalReservas; i++) {
+        medicionderecursos::contarCiclo();
         delete reservas[i];
     }
     delete[] reservas;
 
     for (int i = 0; i < totalAnfitriones; i++) {
+        medicionderecursos::contarCiclo();
         delete anfitriones[i];
     }
     delete[] anfitriones;
@@ -48,6 +53,7 @@ UdeAStay::~UdeAStay() {
 
 bool igualesSinMayusculasYEspacios(const char* a, const char* b) {
     while (*a && *b) {
+        medicionderecursos::contarCiclo();
         while (*a == ' ') a++;
         while (*b == ' ') b++;
 
@@ -74,6 +80,7 @@ void UdeAStay::cargarHuespedes() {
     char linea[256];
     int contador = 0;
     while (fgets(linea, 256, archivo)) {
+        medicionderecursos::contarCiclo();
         if (strlen(linea) > 1) contador++;
     }
     if (contador == 0) {
@@ -83,8 +90,10 @@ void UdeAStay::cargarHuespedes() {
     }
     rewind(archivo);
     huespedes = new Huesped[contador];
+    medicionderecursos::agregarMemoria(contador*sizeof(huespedes));
     totalHuespedes = 0;
     while (fgets(linea, 256, archivo)) {
+        medicionderecursos::contarCiclo();
         linea[strcspn(linea, "\r\n")] = 0;
 
         char* token = strtok(linea, ";");
@@ -122,6 +131,7 @@ void UdeAStay::cargarAnfitriones(Anfitrion* anfitriones[], int& totalAnfitriones
     totalAnfitriones = 0;
 
     while (fgets(linea, 256, archivo) && totalAnfitriones < maxAnfitriones) {
+        medicionderecursos::contarCiclo();
         linea[strcspn(linea, "\n")] = '\0';
         char* documento = strtok(linea, ";");
         char* strAntiguedad = strtok(NULL, ";");
@@ -140,11 +150,13 @@ void UdeAStay::cargarAnfitriones(Anfitrion* anfitriones[], int& totalAnfitriones
         if (codigosTexto && strlen(codigosTexto) > 0) {
             char* token = strtok(codigosTexto, ",");
             while (token != NULL && cantidad < 100) {
+                medicionderecursos::contarCiclo();
                 codigos[cantidad++] = atoi(token);
                 token = strtok(NULL, ",");
             }
         }
         anfitriones[totalAnfitriones] = new Anfitrion(documento, antiguedad, puntuacion, codigos, cantidad);
+        medicionderecursos::agregarMemoria(sizeof(Anfitrion));
         totalAnfitriones++;
     }
     fclose(archivo);
@@ -159,14 +171,17 @@ void UdeAStay::cargarAlojamientos() {
     char linea[300];
     int contador = 0;
     while (fgets(linea, sizeof(linea), archivo)) {
+        medicionderecursos::contarCiclo();
         if (strlen(linea) > 1) contador++;
     }
     rewind(archivo);
     alojamientos = new Alojamiento[contador];
+    medicionderecursos::agregarMemoria(contador*sizeof(alojamientos));
     totalAlojamientos = contador;
 
     int i = 0;
     while (fgets(linea, sizeof(linea), archivo) && i < totalAlojamientos) {
+        medicionderecursos::contarCiclo();
         linea[strcspn(linea, "\r\n")] = 0;
 
         char* token = strtok(linea, ";");
@@ -204,6 +219,7 @@ void UdeAStay::cargarAlojamientos() {
             fechas[sizeof(fechas) - 1] = '\0';
         }
         alojamientos[i] = Alojamiento(cod, nom, docAnf, depto, muni, tipo, dir, precio, amen, fechas);
+        medicionderecursos::agregarMemoria(sizeof(Alojamiento));
         i++;
     }
     fclose(archivo);
@@ -219,6 +235,7 @@ void UdeAStay::cargarReservaciones() {
     totalReservas = 0;
 
     while (fgets(linea, sizeof(linea), archivo)) {
+        medicionderecursos::contarCiclo();
         linea[strcspn(linea, "\r\n")] = 0;
 
         char* token = strtok(linea, ";");
@@ -262,6 +279,7 @@ void UdeAStay::cargarReservaciones() {
         if (token) strncpy(anot, token, sizeof(anot) - 1);
 
         Reservacion* r = new Reservacion(codRes, docH, codAloj, fechaInicio, noches, metodo, monto, fechaPago, anot);
+        medicionderecursos::agregarMemoria(sizeof(Reservacion));
         agregarReserva(r);
     }
     fclose(archivo);
@@ -317,7 +335,9 @@ void UdeAStay::agregarReserva(Reservacion* nueva) {
     if (totalReservas >= capacidadReservas) {
         int nuevaCapacidad = capacidadReservas * 2;
         Reservacion** nuevoArray = new Reservacion*[nuevaCapacidad];
+        medicionderecursos::agregarMemoria(nuevaCapacidad*sizeof(Reservacion));
         for (int i = 0; i < totalReservas; i++) {
+            medicionderecursos::contarCiclo();
             nuevoArray[i] = reservas[i];
         }
         delete[] reservas;
@@ -329,6 +349,7 @@ void UdeAStay::agregarReserva(Reservacion* nueva) {
 
 bool UdeAStay::huespedExiste(const char* documento) const {
     for (int i = 0; i < totalHuespedes; i++) {
+        medicionderecursos::contarCiclo();
         if (strcmp(huespedes[i].getDocumento(), documento) == 0) {
             return true;
         }
@@ -338,6 +359,7 @@ bool UdeAStay::huespedExiste(const char* documento) const {
 
 bool UdeAStay::anfitrionExiste(const char* documento) const {
     for (int i = 0; i < totalAnfitriones; i++) {
+        medicionderecursos::contarCiclo();
         if (strcmp(anfitriones[i]->getDocumento(), documento) == 0) {
             return true;
         }
@@ -352,6 +374,7 @@ int UdeAStay::obtenerUltimoCodigoReserva() {
     char linea[256];
     int ultimo = 0;
     while (fgets(linea, sizeof(linea), archivo)) {
+        medicionderecursos::contarCiclo();
         char* token = strtok(linea, ";");
         if (token && token[0] == 'R') {
             int num = atoi(token + 1);
@@ -364,6 +387,7 @@ int UdeAStay::obtenerUltimoCodigoReserva() {
 
 float UdeAStay::obtenerPuntuacionAnfitrion(const char* doc)const{
     for (int i = 0; i < totalAnfitriones; i++) {
+        medicionderecursos::contarCiclo();
         if (strcmp(anfitriones[i]->getDocumento(), doc) == 0)
             return anfitriones[i]->getPuntuacion();
     }
@@ -375,6 +399,7 @@ void UdeAStay::aplicarFiltros(const char* municipio, const Fecha& inicio, int no
     bool alguno = false;
 
     for (int i = 0; i < totalAlojamientos; i++) {
+        medicionderecursos::contarCiclo();
         const Alojamiento& a = alojamientos[i];
         if (!igualesSinMayusculasYEspacios(a.getMunicipio(), municipio))
             continue;
@@ -409,6 +434,7 @@ void UdeAStay::anularReserva(const char* codigoReservaEliminar) {
     int duracion = 0;
 
     while (fgets(linea, sizeof(linea), original)) {
+        medicionderecursos::contarCiclo();
         char copia[1024];
         strcpy(copia, linea);
         copia[strcspn(copia, "\n")] = 0;
@@ -439,6 +465,7 @@ void UdeAStay::anularReserva(const char* codigoReservaEliminar) {
     rename("temp.txt", "Reservaciones_activas.txt");
     if (encontrada) {
         for (int i = 0; i < totalReservas; i++) {
+            medicionderecursos::contarCiclo();
             if (strcmp(reservas[i]->getCodigo(), codigoReservaEliminar) == 0) {
                 delete reservas[i];
                 for (int j = i; j < totalReservas - 1; j++) {
@@ -449,6 +476,7 @@ void UdeAStay::anularReserva(const char* codigoReservaEliminar) {
             }
         }
         for (int i = 0; i < totalAlojamientos; i++) {
+            medicionderecursos::contarCiclo();
             if (strcmp(alojamientos[i].getCodigo(), codAlojamiento) == 0) {
                 alojamientos[i].actualizarFechasAlojamiento(codAlojamiento, fechaInicio, duracion);
                 break;
@@ -479,6 +507,7 @@ void UdeAStay::actualizarHistorico() {
 
     char linea[1024];
     while (fgets(linea, sizeof(linea), archivoIn)) {
+        medicionderecursos::contarCiclo();
         char copia[1024];
         strcpy(copia, linea);
         copia[strcspn(copia, "\n")] = '\0';
@@ -508,6 +537,7 @@ void UdeAStay::actualizarHistorico() {
     fclose(archivoIn);
     fclose(archivoHist);
     for (int i = 0; i < cantidadAEliminar; i++) {
+        medicionderecursos::contarCiclo();
         anularReserva(codigosAEliminar[i]);
     }
     cout << "Reservas finalizadas pasadas al historico.\n";
@@ -561,6 +591,7 @@ void UdeAStay::menuReservar() {
     cin >> docH;
     Huesped* huesped = nullptr;
     for (int i = 0; i < totalHuespedes; i++) {
+        medicionderecursos::contarCiclo();
         if (strcmp(huespedes[i].getDocumento(), docH) == 0) {
             huesped = &huespedes[i];
             break;
@@ -602,6 +633,7 @@ void UdeAStay::menuReservar() {
         }
         bool hayDisponibles = false;
         for (int i = 0; i < totalAlojamientos; i++) {
+            medicionderecursos::contarCiclo();
             if (igualesSinMayusculasYEspacios(alojamientos[i].getMunicipio(), municipio) &&
                 alojamientos[i].getPrecioPorNoche() <= maxPrecio &&
                 obtenerPuntuacionAnfitrion(alojamientos[i].getDocumentoAnfitrion()) >= minPuntuacion &&
@@ -622,6 +654,7 @@ void UdeAStay::menuReservar() {
         char codAloj[10];
         cin >> codAloj;
         for (int i = 0; i < totalAlojamientos; i++) {
+            medicionderecursos::contarCiclo();
             if (strcmp(alojamientos[i].getCodigo(), codAloj) == 0 &&
                 alojamientos[i].disponibilidad(entrada, noches, reservas, totalReservas)) {
                 seleccionado = &alojamientos[i];
@@ -635,6 +668,7 @@ void UdeAStay::menuReservar() {
         cin >> codAloj;
 
         for (int i = 0; i < totalAlojamientos; i++) {
+            medicionderecursos::contarCiclo();
             if (strcmp(alojamientos[i].getCodigo(), codAloj) == 0 &&
                 alojamientos[i].disponibilidad(entrada, noches, reservas, totalReservas)) {
                 seleccionado = &alojamientos[i];
@@ -667,6 +701,7 @@ void UdeAStay::menuReservar() {
     sprintf(codReserva, "R%03d", obtenerUltimoCodigoReserva() + 1);
 
     Reservacion* nueva = new Reservacion(codReserva, docH, seleccionado->getCodigo(), entrada, noches, "", monto, Fecha(), anotaciones);
+    medicionderecursos::agregarMemoria(sizeof(Reservacion))
     if (!nueva->realizarPago()) {
         cout << "Reserva cancelada.\n";
         delete nueva;
@@ -694,6 +729,7 @@ void UdeAStay::menuAnularReservaComoHuesped(const char* documentoHuesped) {
     const char* codigo = nullptr;
     bool tieneReservas = false;
     for (int i = 0; i < totalReservas; i++) {
+        medicionderecursos::contarCiclo();
         if (strcmp(reservas[i]->getDocumentoHuesped(), documentoHuesped) == 0) {
             reservas[i]->mostrar();
             tieneReservas = true;
@@ -729,6 +765,7 @@ void UdeAStay::menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Res
     }
     Anfitrion* anfitrionActivo = nullptr;
     for (int i = 0; i < totalAnfitriones; i++) {
+    medicionderecursos::contarCiclo();
         if (strcmp(anfitriones[i]->getDocumento(), documento) == 0) {
             anfitrionActivo = anfitriones[i];
             break;
@@ -740,6 +777,7 @@ void UdeAStay::menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Res
     }
     int opcion;
     do {
+        medicionderecursos::contarCiclo();
         cout << "\n--- MENU ANFITRION ---\n";
         cout << "1. Ver reservas activas\n";
         cout << "2. Actualizar historico de reservas\n";
@@ -800,6 +838,7 @@ void UdeAStay::menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Res
 void UdeAStay::menuHuesped(const char* documento) {
     Huesped* huesped = nullptr;
     for (int i = 0; i < totalHuespedes; i++) {
+        medicionderecursos::contarCiclo();
         if (strcmp(huespedes[i].getDocumento(), documento) == 0) {
             huesped = &huespedes[i];
             break;
@@ -811,6 +850,7 @@ void UdeAStay::menuHuesped(const char* documento) {
     }
     int opcion;
     do {
+        medicionderecursos::contarCiclo();
         cout << "\n--- MENU HUESPED ---\n";
         cout << "1. Reservar alojamiento\n";
         cout << "2. Consultar reservas activas\n";
@@ -842,6 +882,7 @@ void UdeAStay::menuHuesped(const char* documento) {
 void UdeAStay::menuPrincipal() {
     int opcion;
     do {
+        medicionderecursos::contarCiclo();
         cout << "\n--- MENU PRINCIPAL ---\n";
         cout << "1. Ingresar como huesped\n";
         cout << "2. Ingresar como anfitrion\n";
