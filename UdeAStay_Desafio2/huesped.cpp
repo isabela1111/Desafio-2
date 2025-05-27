@@ -30,7 +30,8 @@ float Huesped::getPuntuacion() const {
 bool Huesped::verificarReservas(const Fecha& inicio, int duracion, Reservacion** listaReservas, int totalReservas) const {
     Fecha finDeseada = inicio.sumarDias(duracion - 1);
 
-    for (int i = 0; i < totalReservas; i++) {
+    for (int i = 0; i < totalReservas; i++) 
+        medicionderecursos::contarCiclo();
         if (strcmp(listaReservas[i]->getDocumentoHuesped(), documento) == 0) {
             Fecha inicioExistente = listaReservas[i]->getFechaInicio();
             Fecha finExistente = inicioExistente.sumarDias(listaReservas[i]->getDuracion() - 1);
@@ -56,6 +57,7 @@ void Huesped::consultarReservas(Reservacion** lista, int total){
     bool hayReservas = false;
 
     for (int i = 0; i < total; i++) {
+        medicionderecursos::contarCiclo()
         if (strcmp(lista[i]->getDocumentoHuesped(), documento) == 0) {
             lista[i]->mostrar();
             hayReservas = true;
