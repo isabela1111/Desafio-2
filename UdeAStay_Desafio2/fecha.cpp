@@ -70,6 +70,7 @@ Fecha Fecha::sumarDias(int dias) const {
     int diasMes[] = { 31,28,31,30,31,30,31,31,30,31,30,31 };
 
     while (dias > 0) {
+        medicionderecursos::contarCiclo();
         if ((a % 4 == 0 && a % 100 != 0) || (a % 400 == 0)) diasMes[1] = 29;
         else diasMes[1] = 28;
 
