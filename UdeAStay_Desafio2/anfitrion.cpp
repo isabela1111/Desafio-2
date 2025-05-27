@@ -1,4 +1,5 @@
 #include "anfitrion.h"
+#include "medicionderecursos.h"
 #include "reservacion.h"
 #include <cstring>
 #include <cstdio>
@@ -8,6 +9,8 @@ using namespace std;
 
 Anfitrion::Anfitrion() {
     documento = new char[1];
+    medicionderecursos::agregarMemoria(1);
+    
     documento[0] = '\0';
     antiguedad = 0;
     puntuacion = 0;
@@ -17,6 +20,7 @@ Anfitrion::Anfitrion() {
 
 Anfitrion::Anfitrion(const char* doc, int ant, float punt, int* cods, int numCods) {
     documento = new char[strlen(doc) + 1];
+    medicionderecursos::agregarMemoria(strlen(doc) + 1);
     strcpy(documento, doc);
     antiguedad = ant;
     puntuacion = punt;
@@ -24,7 +28,9 @@ Anfitrion::Anfitrion(const char* doc, int ant, float punt, int* cods, int numCod
 
     if (numAlojamientos > 0) {
         codigosAlojamientos = new int[numAlojamientos];
+        medicionderecursos::agregarMemoria(numAlojamientos*sizeof(int));
         for (int i = 0; i < numAlojamientos; i++) {
+            medicionderecursos::contarCiclo();
             codigosAlojamientos[i] = cods[i];
         }
     } else {
@@ -49,8 +55,10 @@ void Anfitrion::verReservas(Reservacion* reservas[], int totalReservas) const {
     bool encontrada = false;
 
     for (int i = 0; i < totalReservas; i++) {
+        medicionderecursos::contarCiclo();
         const char* codReserva = reservas[i]->getCodigoAlojamiento();
         for (int j = 0; j < numAlojamientos; j++) {
+            medicionderecursos::contarCiclo();
             char buffer[10];
             sprintf(buffer, "%d", codigosAlojamientos[j]);
 
