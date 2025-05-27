@@ -1,4 +1,5 @@
 #include "huesped.h"
+#include "medicicionderecursos.h"
 #include <iostream>
 #include <cstring>
 using namespace std;
