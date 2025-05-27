@@ -1,5 +1,5 @@
 #include "huesped.h"
-#include "medicicionderecursos.h"
+#include "medicionrecursos.h"
 #include <iostream>
 #include <cstring>
 using namespace std;
@@ -31,8 +31,8 @@ float Huesped::getPuntuacion() const {
 bool Huesped::verificarReservas(const Fecha& inicio, int duracion, Reservacion** listaReservas, int totalReservas) const {
     Fecha finDeseada = inicio.sumarDias(duracion - 1);
 
-    for (int i = 0; i < totalReservas; i++) 
-        medicionderecursos::contarCiclo();
+    for (int i = 0; i < totalReservas; i++) {
+        MedicionRecursos::contarCiclo();
         if (strcmp(listaReservas[i]->getDocumentoHuesped(), documento) == 0) {
             Fecha inicioExistente = listaReservas[i]->getFechaInicio();
             Fecha finExistente = inicioExistente.sumarDias(listaReservas[i]->getDuracion() - 1);
@@ -46,6 +46,7 @@ bool Huesped::verificarReservas(const Fecha& inicio, int duracion, Reservacion**
     return true;
 }
 
+
 const char* Huesped::solicitarAnulacion() {
     static char codigo[10];
     cout << "Ingrese el codigo de la reservacion a anular: ";
@@ -58,7 +59,7 @@ void Huesped::consultarReservas(Reservacion** lista, int total){
     bool hayReservas = false;
 
     for (int i = 0; i < total; i++) {
-        medicionderecursos::contarCiclo()
+        MedicionRecursos::contarCiclo();
         if (strcmp(lista[i]->getDocumentoHuesped(), documento) == 0) {
             lista[i]->mostrar();
             hayReservas = true;

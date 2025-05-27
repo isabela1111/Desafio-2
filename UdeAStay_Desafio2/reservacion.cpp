@@ -1,7 +1,7 @@
 #include "reservacion.h"
+#include "medicionrecursos.h"
 #include <cstring>
 #include <iostream>
-
 using namespace std;
 
 Reservacion::Reservacion() {
@@ -29,7 +29,6 @@ Reservacion::Reservacion(const char* codRes, const char* docH, const char* codAl
     strncpy(anotaciones, nota, sizeof(anotaciones) - 1); anotaciones[sizeof(anotaciones) - 1] = '\0';
 }
 
-// Getters
 const char* Reservacion::getCodigo() const { return codigo; }
 const char* Reservacion::getDocumentoHuesped() const { return documentoHuesped; }
 const char* Reservacion::getCodigoAlojamiento() const { return codigoAlojamiento; }
@@ -41,6 +40,7 @@ Fecha Reservacion::getFechaPago() const { return fechaPago; }
 const char* Reservacion::getAnotaciones() const { return anotaciones; }
 
 void Reservacion::mostrar() const {
+    MedicionRecursos::contarCiclo();
     cout << "Codigo: " << codigo << endl;
     cout << "Huesped: " << documentoHuesped << " - Alojamiento: " << codigoAlojamiento << endl;
     cout << "Fecha de inicio: ";
@@ -56,16 +56,19 @@ void Reservacion::mostrar() const {
 }
 
 bool Reservacion::activa(const Fecha& fechaCorte) const {
+    MedicionRecursos::contarCiclo();
     Fecha fin = fechaInicio.sumarDias(duracionNoches);
     return fin.comparar(fechaCorte) >= 0;
 }
 
 bool Reservacion::realizarPago() {
+    MedicionRecursos::contarCiclo();
     char respuesta[5];
     cout << "Desea pagar ahora? (si/no): ";
     cin >> respuesta;
 
     if (strcmp(respuesta, "si") == 0 || strcmp(respuesta, "SI") == 0) {
+        MedicionRecursos::contarCiclo();
         cout << "Monto total a pagar: $" << monto << endl;
         int opcion;
         cout << "Seleccione el metodo de pago:\n";
@@ -99,14 +102,17 @@ bool Reservacion::realizarPago() {
             cout << "Monto invalido. No se puede pagar.\n";
             return false;
         }
+
         cout << "Pago registrado correctamente el ";
         fechaPago.imprimirFechaLarga();
         cout << " con metodo: " << metodoPago << endl;
         return true;
     }
+
     cout << "Pago pendiente.\n";
     return false;
 }
+
 
 
 

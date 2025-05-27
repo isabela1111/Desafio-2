@@ -12,8 +12,9 @@ SOURCES += \
         fecha.cpp \
         huesped.cpp \
         main.cpp \
+        medicionrecursos.cpp \
         reservacion.cpp \
-        udeastay.cpp \
+        udeastay.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -26,4 +27,5 @@ HEADERS += \
     fecha.h \
     huesped.h \
     reservacion.h \
-    udeastay.h
+    udeastay.h \
+    medicionrecursos.h \
