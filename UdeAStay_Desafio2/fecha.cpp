@@ -1,4 +1,5 @@
 #include "fecha.h"
+#include "medicionderecursos.h"
 #include <iostream>
 
 Fecha::Fecha(int d, int m, int a) {
