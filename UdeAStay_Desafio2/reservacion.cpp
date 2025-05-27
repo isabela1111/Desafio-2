@@ -62,12 +62,11 @@ bool Reservacion::activa(const Fecha& fechaCorte) const {
 
 bool Reservacion::realizarPago() {
     char respuesta[5];
-    cout << "¿Desea pagar ahora? (si/no): ";
+    cout << "Desea pagar ahora? (si/no): ";
     cin >> respuesta;
 
     if (strcmp(respuesta, "si") == 0 || strcmp(respuesta, "SI") == 0) {
         cout << "Monto total a pagar: $" << monto << endl;
-
         int opcion;
         cout << "Seleccione el metodo de pago:\n";
         cout << "1. PSE\n";
@@ -87,7 +86,6 @@ bool Reservacion::realizarPago() {
             cout << "Metodo invalido. No se registro el pago.\n";
             return false;
         }
-
         int d, m, a;
         cout << "Ingrese la fecha de pago (dd mm aaaa): ";
         cin >> d >> m >> a;
@@ -97,7 +95,6 @@ bool Reservacion::realizarPago() {
             cout << "Fecha invalida. No se registro el pago.\n";
             return false;
         }
-
         if (monto <= 0) {
             cout << "Monto invalido. No se puede pagar.\n";
             return false;

@@ -89,12 +89,6 @@ void Alojamiento::mostrar() const {
     cout << "Municipio: " << municipio << " (" << departamento << ")" << endl;
     cout << "Precio por noche: $" << precioNoche << endl;
     cout << "Amenidades: " << amenidades << endl;
-    if (strlen(fechasReservadas) > 0) {
-        cout << "Fechas reservadas: " << fechasReservadas << endl;
-    }
-    else {
-        cout << "Sin fechas reservadas." << endl;
-        }
     cout << "--------------------------" << endl;
 }
 
@@ -107,7 +101,6 @@ bool Alojamiento::disponibilidad(const Fecha& nuevaEntrada, int duracion, Reserv
     }
     for (int i = 0; i < cantidadReservas; i++) {
         Reservacion* res = reservas[i];
-
         if (strcmp(res->getCodigoAlojamiento(), codigo) == 0) {
             Fecha resInicio = res->getFechaInicio();
             Fecha resSalida = resInicio.sumarDias(res->getDuracion() - 1);
@@ -122,11 +115,9 @@ bool Alojamiento::disponibilidad(const Fecha& nuevaEntrada, int duracion, Reserv
     return true;
 }
 
-
 void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inicio, int duracion) {
     FILE* in = fopen("Alojamientos.txt", "r");
     FILE* temp = fopen("temp.txt", "w");
-
     if (!in || !temp) {
         cout << "Error al abrir los archivos de alojamiento.\n";
         return;
@@ -138,7 +129,6 @@ void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inic
         Fecha f = inicio.sumarDias(i);
         sprintf(fechasAEliminar[i], "%02d/%02d/%04d", f.getDia(), f.getMes(), f.getAnio());
     }
-
     while (fgets(linea, sizeof(linea), in)) {
         char copia[1024];
         strcpy(copia, linea);
@@ -170,7 +160,6 @@ void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inic
                     strcat(nuevasFechas, fechaToken);
                     primera = false;
                 }
-
                 fechaToken = strtok(NULL, ",");
             }
             for (int i = 0; i < 9; i++) {
@@ -190,7 +179,6 @@ void Alojamiento::actualizarFechasAlojamiento(const char* cod, const Fecha& inic
 void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, int duracion) {
     FILE* in = fopen("Alojamientos.txt", "r");
     FILE* temp = fopen("temp.txt", "w");
-
     if (!in || !temp) {
         cout << "Error al abrir los archivos de alojamiento.\n";
         return;
@@ -199,7 +187,7 @@ void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, 
     while (fgets(linea, sizeof(linea), in)) {
         char copia[1024];
         strcpy(copia, linea);
-        copia[strcspn(copia, "\n")] = 0; // Eliminar salto de línea final
+        copia[strcspn(copia, "\n")] = 0;
 
         char campos[10][256] = {};
         int count = 0;
@@ -245,15 +233,12 @@ void Alojamiento::agregarFechasReservadas(const char* cod, const Fecha& inicio, 
     rename("temp.txt", "Alojamientos.txt");
 }
 
-
 bool Alojamiento::fechaOcupada(const Fecha& f) const {
     char buscada[12];
     sprintf(buscada, "%02d/%02d/%04d", f.getDia(), f.getMes(), f.getAnio());
-
     char copia[1024];
     strncpy(copia, fechasReservadas, sizeof(copia) - 1);
     copia[sizeof(copia) - 1] = '\0';
-
     char* token = strtok(copia, ",");
     while (token != NULL) {
         if (strcmp(token, buscada) == 0) {
@@ -263,4 +248,3 @@ bool Alojamiento::fechaOcupada(const Fecha& f) const {
     }
     return false;
 }
-

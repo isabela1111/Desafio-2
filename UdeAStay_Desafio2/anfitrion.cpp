@@ -44,34 +44,12 @@ float Anfitrion::getPuntuacion() const {
     return puntuacion;
 }
 
-
-//Esta funcion solo se uso de prueba para comprobar que el programara leyera correctamente la informacion del .txt, se borrara en un commit despues
-/*
-void Anfitrion::mostrarInfo() const {
-    cout << "Documento: " << documento << endl;
-    cout << "Antigüedad: " << antiguedad << " meses" << endl;
-    cout << "Puntuación: " << puntuacion << "/5" << endl;
-    cout << "Alojamientos: ";
-    if (numAlojamientos == 0) {
-        cout << "Ninguno";
-    } else {
-        for (int i = 0; i < numAlojamientos; i++) {
-            cout << codigosAlojamientos[i];
-            if (i < numAlojamientos - 1)
-                cout << ", ";
-        }
-    }
-    cout << "\n-----------------------------\n";
-}*/
-
 void Anfitrion::verReservas(Reservacion* reservas[], int totalReservas) const {
     cout << "Reservas activas para el anfitrion con documento: " << documento << endl;
     bool encontrada = false;
 
     for (int i = 0; i < totalReservas; i++) {
         const char* codReserva = reservas[i]->getCodigoAlojamiento();
-
-        // Comparar contra todos los alojamientos del anfitrión
         for (int j = 0; j < numAlojamientos; j++) {
             char buffer[10];
             sprintf(buffer, "%d", codigosAlojamientos[j]);
@@ -86,92 +64,4 @@ void Anfitrion::verReservas(Reservacion* reservas[], int totalReservas) const {
     if (!encontrada) {
         cout << "No se encontraron reservaciones para sus alojamientos.\n";
     }
-}
-
-
-void Anfitrion::actualizarHistorico(Reservacion* reservas[], int& totalReservas, const Fecha& fechaCorte) {
-    FILE* historico = fopen("Historico.txt", "a");
-    if (!historico) {
-        cout << "No se pudo abrir el archivo Historico.txt para escritura.\n";
-        return;
-    }
-
-    FILE* original = fopen("Reservaciones_activas.txt", "r");
-    FILE* temp = fopen("temp.txt", "w");
-    if (!original || !temp) {
-        cout << "Error al abrir archivos de reservaciones activas.\n";
-        fclose(historico);
-        return;
-    }
-
-    char linea[1024];
-    while (fgets(linea, sizeof(linea), original)) {
-        char copia[1024];
-        strcpy(copia, linea);
-        copia[strcspn(copia, "\n")] = '\0';
-
-        char* token = strtok(copia, ";");  
-        if (!token) continue;
-        char codigo[15]; strcpy(codigo, token);
-
-        token = strtok(NULL, ";"); if (!token) continue;
-        char documento[20]; strcpy(documento, token);
-
-        token = strtok(NULL, ";"); if (!token) continue;
-        char codAloj[10]; strcpy(codAloj, token);
-
-        token = strtok(NULL, ";"); if (!token) continue;
-        int d, m, a;
-        sscanf(token, "%d/%d/%d", &d, &m, &a);
-        Fecha inicio(d, m, a);
-
-        token = strtok(NULL, ";"); if (!token) continue;
-        int duracion = atoi(token);
-        Fecha fin = inicio.sumarDias(duracion - 1);
-
-        bool esDelAnfitrion = false;
-        for (int j = 0; j < numAlojamientos; j++) {
-            char codAnf[10];
-            sprintf(codAnf, "%d", codigosAlojamientos[j]);
-            if (strcmp(codAloj, codAnf) == 0) {
-                esDelAnfitrion = true;
-                break;
-            }
-        }
-
-        if (esDelAnfitrion && fin.esMenorQue(fechaCorte)) {
-            fputs(linea, historico);  // guarda en Historico.txt
-
-            // eliminar el arreglo de reservas en la memoria
-            for (int i = 0; i < totalReservas; i++) {
-                if (strcmp(reservas[i]->getCodigo(), codigo) == 0) {
-                    delete reservas[i];
-                    for (int k = i; k < totalReservas - 1; k++)
-                        reservas[k] = reservas[k + 1];
-                    totalReservas--;
-                    break;
-                }
-            }
-
-            // Aqui eliminamos fechas del alojamiento
-            for (int i = 0; i < 1000; i++) {
-                if (reservas[i] && strcmp(reservas[i]->getCodigo(), codigo) == 0) {
-                    break;
-                }
-            }
-            Alojamiento a;
-            a.actualizarFechasAlojamiento(codAloj, inicio, duracion);
-        } else {
-            fputs(linea, temp);  
-        }
-    }
-
-    fclose(original);
-    fclose(temp);
-    fclose(historico);
-
-    remove("Reservaciones_activas.txt");
-    rename("temp.txt", "Reservaciones_activas.txt");
-
-    cout << "Reservas actualizadas. Las finalizadas se movieron al historico.\n";
 }

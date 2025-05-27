@@ -21,6 +21,9 @@ private:
     int totalReservas;
     int capacidadReservas;
 
+    Fecha fechaCorte;
+    bool fechaCorteDefinida;
+
 public:
     UdeAStay();
     ~UdeAStay();
@@ -46,6 +49,10 @@ public:
 
     bool huespedExiste(const char* documento) const;
     bool anfitrionExiste(const char* documento) const;
+    void guardarFechaCorteEnArchivo();
+    void cargarFechaCorteDesdeArchivo();
+    void actualizarHistorico();
+
 
 };
 

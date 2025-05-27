@@ -19,14 +19,15 @@ public:
     void setAnio(int a);
 
     bool esMenorQue(const Fecha& otra) const;
-    bool esIgualA(const Fecha& otra) const;
-    void mostrar() const;
     Fecha& operator=(const Fecha& otra);
     bool validarFecha() const;
     void imprimirFechaLarga() const;
-
     Fecha sumarDias(int dias) const;
     int comparar(const Fecha& otra) const;
+    Fecha sumarMeses(int meses) const;
+    bool esMayorQue(const Fecha& otra) const;
+
+
 };
 
 #endif

@@ -35,12 +35,12 @@ bool Huesped::verificarReservas(const Fecha& inicio, int duracion, Reservacion**
             Fecha inicioExistente = listaReservas[i]->getFechaInicio();
             Fecha finExistente = inicioExistente.sumarDias(listaReservas[i]->getDuracion() - 1);
 
-            if (!(finDeseada.esMenorQue(inicioExistente) || inicio.esMenorQue(finExistente) == false)) {
+            bool noSeSolapan = finDeseada.esMenorQue(inicioExistente) || finExistente.esMenorQue(inicio);
+            if (!noSeSolapan) {
                 return false;
             }
         }
     }
-
     return true;
 }
 
@@ -61,15 +61,8 @@ void Huesped::consultarReservas(Reservacion** lista, int total){
             hayReservas = true;
         }
     }
-
     if (!hayReservas) {
         cout << "No tiene reservas activas.\n";
     }
-}
-
-void Huesped::mostrarResumen() const {
-    cout << "Documento: " << documento
-         << ", Antiguedad: " << antiguedad
-         << ", Puntuacion: " << puntuacion << endl;
 }
 

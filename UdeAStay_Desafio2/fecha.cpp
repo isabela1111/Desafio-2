@@ -15,24 +15,10 @@ void Fecha::setDia(int d) { dia = d; }
 void Fecha::setMes(int m) { mes = m; }
 void Fecha::setAnio(int a) { anio = a; }
 
-void Fecha::mostrar() const {
-    if (dia < 10) std::cout << "0";
-    std::cout << dia << "/";
-
-    if (mes < 10) std::cout << "0";
-    std::cout << mes << "/";
-
-    std::cout << anio;
-}
-
 bool Fecha::esMenorQue(const Fecha& otra) const {
     if (anio != otra.anio) return anio < otra.anio;
     if (mes != otra.mes) return mes < otra.mes;
     return dia < otra.dia;
-}
-
-bool Fecha::esIgualA(const Fecha& otra) const {
-    return dia == otra.dia && mes == otra.mes && anio == otra.anio;
 }
 
 Fecha& Fecha::operator=(const Fecha& otra) {
@@ -114,4 +100,31 @@ int Fecha::comparar(const Fecha& otra) const {
     if (dia < otra.dia) return -1;
     if (dia > otra.dia) return 1;
     return 0;
+}
+Fecha Fecha::sumarMeses(int meses) const {
+    int nuevoMes = mes + meses;
+    int nuevoAnio = anio + (nuevoMes - 1) / 12;
+    nuevoMes = (nuevoMes - 1) % 12 + 1;
+
+    int nuevoDia = dia;
+    int diasEnMes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+    if ((nuevoAnio % 4 == 0 && nuevoAnio % 100 != 0) || (nuevoAnio % 400 == 0)) {
+        diasEnMes[1] = 29;
+    }
+
+    if (nuevoDia > diasEnMes[nuevoMes - 1]) {
+        nuevoDia = diasEnMes[nuevoMes - 1];
+    }
+    return Fecha(nuevoDia, nuevoMes, nuevoAnio);
+}
+
+bool Fecha::esMayorQue(const Fecha& otra) const {
+    if (anio > otra.anio) return true;
+    if (anio < otra.anio) return false;
+
+    if (mes > otra.mes) return true;
+    if (mes < otra.mes) return false;
+
+    return dia > otra.dia;
 }
