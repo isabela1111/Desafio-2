@@ -49,6 +49,14 @@ float Anfitrion::getPuntuacion() const {
     return puntuacion;
 }
 
+int Anfitrion::getNumAlojamientos() const {
+    return numAlojamientos;
+}
+
+int* Anfitrion::getCodigosAlojamientos() const {
+    return codigosAlojamientos;
+}
+
 void Anfitrion::verReservas(Reservacion* reservas[], int totalReservas) const {
     cout << "Reservas activas para el anfitrion con documento: " << documento << endl;
     bool encontrada = false;

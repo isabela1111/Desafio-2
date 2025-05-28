@@ -16,7 +16,8 @@ public:
     ~Anfitrion();
     const char* getDocumento() const;
     float getPuntuacion() const;
-
+    int getNumAlojamientos() const;
+    int* getCodigosAlojamientos() const;
 
     void verReservas(Reservacion* reservas[], int totalReservas) const;
 

@@ -817,6 +817,29 @@ void UdeAStay::menuAnfitrion(Anfitrion* anfitriones[], int totalAnfitriones, Res
             char codigo[20];
             cout << "Ingrese el codigo de la reserva que desea anular: ";
             cin >> codigo;
+            const char* codAloj = nullptr;
+            for (int i = 0; i < totalReservas; i++) {
+                MedicionRecursos::contarCiclo();
+                if (strcmp(reservas[i]->getCodigo(), codigo) == 0) {
+                    codAloj = reservas[i]->getCodigoAlojamiento();
+                    break;
+                }
+            }
+            bool esDelAnfitrion = false;
+            for (int i = 0; i < anfitrionActivo->getNumAlojamientos(); i++) {
+                MedicionRecursos::contarCiclo();
+                char codAnf[10];
+                sprintf(codAnf, "%d", anfitrionActivo->getCodigosAlojamientos()[i]);
+
+                if (strcmp(codAloj, codAnf) == 0) {
+                    esDelAnfitrion = true;
+                    break;
+                }
+            }
+            if (!esDelAnfitrion) {
+                cout << "No tienes acceso a esta reserva\n";
+                break;
+            }
             anularReserva(codigo);
             break;
         }

@@ -11,7 +11,7 @@ private:
     int duracionNoches;
     char metodoPago[10];
     float monto;
-    Fecha fechaPago; 
+    Fecha fechaPago;
     char anotaciones[1001];
 
 public:
