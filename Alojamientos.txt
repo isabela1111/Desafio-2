@@ -1,0 +1,33 @@
+1001;Casa en Santa Elena;1034567890;Antioquia;Medellin;Casa;Vereda El Plan #5;180000;Patio,Parqueadero,Caja Fuerte;10/10/2025,11/10/2025
+1002;Apto El Poblado;1034567890;Antioquia;Poblado;Apartamento;Cra 43A #10-20;150000;Ascensor,Piscina,Aire;06/07/2025,07/07/2025,08/07/2025
+2038;Casa Familiar estrellita;1098765432;Valle del Cauca;Cali;Casa;Calle 50 #48-30;130000;Parqueadero,Patio,piscina;
+5001;Apto la fauna;1122334455;Santander;Bucaramanga;Apartamento;Calle 36 Sur 27-65;160000;Aire,CajaFuerte,Ascensor;01/07/2025
+3012;Casa Rural;1000111222;Antioquia;Medellin;Casa;Vereda El Roble #12;200000;Patio,Parqueadero,Piscina;
+3045;Apto Bello Norte;1000111222;Narino;Pasto;Apartamento;Cra 52 #30-21;120000;Ascensor,Parqueadero;
+3078;Cabana El Retiro;1000111222;Antioquia;Rionegro;Casa;Km 8 via Don Diego;250000;Patio,Piscina,zona de juegos;
+4021;Loft Sabaneta Centro;1029384756;Caldas;Manizales;Apartamento;Cl 72 #45-20;140000;Aire,Ascensor;22/02/2025,11/08/2025,12/08/2025
+5010;Casa Itagui Sur;1056789012;Antioquia;Itagui;Casa;Cl 60A #42-10;130000;Parqueadero;
+6011;Apartamento Robledo;1100112233;Antioquia;Robledo;Apartamento;Cra 80 #65-45;125000;Ascensor,Aire;
+6012;Apartamento Nuevo;1100112233;Atlantico;Barranquilla;Apartamento;Cra 50 #20-15;135000;Ascensor,Parqueadero;
+7015;Casa Campestre;1234567899;Antioquia;Medellin;Casa;Cl 10 #5-20;220000;Patio,Parqueadero,piscina;
+3005;Apto Norte;1087456321;Quindio;Armenia;Apartamento;Cra 30 #10-45;155000;Ascensor,Aire;
+8043;Loft Central;1065432198;Tolima;Ibague;Apartamento;Cl 40 #15-30;160000;Ascensor,Piscina;
+8044;Apartamento Moderno;1065432198;Tolima;Ibague;Apartamento;Cl 42 #12-25;158000;Aire,CajaFuerte;07/07/2025,08/07/2025,09/07/2025,10/07/2025
+9001;Casa Colonial;1010101010;Caldas;Manizales;Casa;Cra 20 #5-30;170000;Patio,Parqueadero;
+9002;Casa de Campo;1010101010;Antioquia;Guatape;Casa;Vereda La Palma #7;165000;Patio,piscina,jacuzzi;
+9003;Apartamento Vista;1010101010;Antioquia;Guatape;Apartamento;Cra 10 #40-20;168000;Ascensor,Aire;
+10001;Penthouse Premium;1155998844;Antioqua;Poblado;Apartamento;Cl 55 #30-10;220000;Ascensor,Piscina,Aire;
+11011;Casa Moderna;1077345123;Narino;Pasto;Casa;Cra 70 #15-20;135000;Parqueadero,Patio;
+11012;Apto Central;1077345123;Narino;Pasto;Apartamento;Cl 60 #10-45;130000;Ascensor;
+12007;Cabana;1099988776;Antioquia;bello;Casa;Vereda El Carmen #3;110000;Patio,Piscina;
+105320;Casa Pequena;1144223355;Meta;Villavicencio;Casa;Cra 12 #4-5;140000;Patio;
+13009;Apto Ejecutivo;1047852369;Bolivar;Cartagena;Apartamento;Cl 30 #12-15;160000;Ascensor,Aire;
+13010;Apartamento Familiar;1047852369;Bolivar;Cartagena;Apartamento;Cra 15 #20-10;158000;Ascensor;
+14015;Loft Urbano;1166000123;Antioquia;Sabaneta;Apartamento;Cl 25 #10-8;140000;Ascensor,caja furte,gym;
+15004;Casa de Playa;1188997744;Magdalena;Santa Marta;Casa;Carrera 5 #10-25;175000;Patio,Parqueadero;
+15005;Casa Grande;1188997744;Magdalena;Santa Marta;Casa;Cl 40 #15-35;180000;Patio,Piscina;
+58720;Apartamento Central;1001001001;Atlantico;Barranquilla;Apartamento;Cra 10 #20-10;130000;Ascensor,Aire;
+32402;Apartamento Norte;1001001001;Atlantico;Barranquilla;Apartamento;Cra 15 #25-30;120000;Ascensor;
+5302;Casa Familiar;1001001001;Atlantico;santa Marta;Casa;Vereda El Sol #7;175000;Patio,Parqueadero;
+16016;Loft Moderno;1111111111;Quindio;Armenia;Apartamento;Cra 40 #30-10;145000;Ascensor,Aire;
+16017;Apartamento Sol;1111111111;Antioquia;Guatape;Apartamento;Cl 45 #20-15;250000;Ascensor,Piscina,jacuzzi;15/11/2025,16/11/2025
